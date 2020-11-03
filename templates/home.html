@@ -1,0 +1,8 @@
+<h1>Home</h1>
+{% if session.username %}
+<p>Olet kirjautunut nimellä {{ session.username }}</p>
+<a href="/logout">Log out</a>
+<br>
+{% else %}
+<a href="/">Login</a>
+{% endif %}
