@@ -1,0 +1,15 @@
+{% if session.username %}
+<p>Already logged in. Can not register</p>
+<a href="/home">home</a>
+{% else %}
+<h1>Create an account</h1>
+<form action="/register" method="POST">
+<p>Username:<br>
+<input type="text" name="username"></p>
+<p>Enter password:<br>
+<input type="password" name="password"></p>
+<p>Retype the password</br>
+<input type="password" name="retypedPassword"></p>
+<input type="submit" value="Create an account">
+</form>
+{% endif %}

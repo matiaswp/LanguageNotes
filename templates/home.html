@@ -1,7 +1,13 @@
 <h1>Home</h1>
 {% if session.username %}
-<p>Olet kirjautunut nimellä {{ session.username }}</p>
-<a href="/logout">Log out</a>
+<p>Logged in as {{ session.username }}</p>
+<a href="/logout">Logout</a>
+<br>
+<hr>
+{% for message in messages %}
+{{ message[0] }}
+<hr>
+{% endfor %}
 <br>
 {% else %}
 <a href="/">Login</a>
