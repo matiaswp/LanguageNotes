@@ -6,7 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 #Lists all usernames (temporary, for testing pusposes only)
 def users(SQLAlchemy):
-    result = SQLAlchemy.session.execute("SELECT username FROM users")
+    result = SQLAlchemy.session.execute("SELECT username FROM userinfo")
     content = result.fetchall()
     return content
 
@@ -31,7 +31,7 @@ def createAccount(SQLAlchemy, username, password):
     #If username doesn't exist, create user and return true
     if checkIfUsernameExists(SQLAlchemy, username) == False:
         hash_value = generate_password_hash(password)
-        sql = "INSERT INTO users (username,password) VALUES (:username,:password)"
+        sql = "INSERT INTO userinfo (username,password) VALUES (:username,:password)"
         SQLAlchemy.session.execute(sql, {"username":username,"password":hash_value})
         SQLAlchemy.session.commit()
         return True
@@ -43,7 +43,7 @@ def createAccount(SQLAlchemy, username, password):
 def checkIfUsernameExists(SQLAlchemy, username): 
 
     #Tries to find given username from database
-    sql = "SELECT username FROM users WHERE username=:username"
+    sql = "SELECT username FROM userinfo WHERE username=:username"
     result = SQLAlchemy.session.execute(sql, {"username":username})
     user = result.fetchone()
 
@@ -58,7 +58,7 @@ def checkIfPasswordCorrect(SQLAlchemy, username, password):
     typedPassword = generate_password_hash(password)
     
     #Fetches the password for the given account
-    sql = "SELECT password FROM users WHERE username=:username"
+    sql = "SELECT password FROM userinfo WHERE username=:username"
     result = SQLAlchemy.session.execute(sql, {"username":username})
     pw = result.fetchone()
     correctPassword = pw[0]

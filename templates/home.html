@@ -3,11 +3,13 @@
 <p>Logged in as {{ session.username }}</p>
 <a href="/logout">Logout</a>
 <br>
-<hr>
-{% for message in messages %}
-{{ message[0] }}
-<hr>
-{% endfor %}
+<ul>
+    <li><a href="/home">Home</a></a>
+    <li><a href="/home">Lists</a></a>
+    <li><a href="/home">Friends</a></a>
+    <li><a href="/home">Search</a></a>
+    <li><a href="/home">FAQ/Info</a></a>
+</ul>
 <br>
 {% else %}
 <a href="/">Login</a>
