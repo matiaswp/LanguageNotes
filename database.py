@@ -68,3 +68,4 @@ def checkIfPasswordCorrect(SQLAlchemy, username, password):
         return True
     else:
         return False
+

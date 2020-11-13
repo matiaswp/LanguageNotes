@@ -2,6 +2,7 @@ from flask import Flask
 from flask import redirect, render_template, request, session
 from os import getenv
 import database
+import userlists
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -29,10 +30,10 @@ def login():
     else:
         return redirect("/")
     
-
 #Logs you out
 @app.route("/logout")
 def logout():
+    username = ""
     del session["username"]
     return redirect("/")
 
@@ -64,4 +65,19 @@ def register():
     #TODO show message that passwords don't match
     else:
         return redirect("/register")
-    
+
+#Shows lists page
+@app.route("/lists")    
+def lists():
+    username = session["username"]
+    print(username)
+    usersList = userlists.listLists(db,username)
+    return render_template("lists.html", lists=usersList)
+
+#For creating a new list
+@app.route("/lists", methods=["POST"])
+def listsNewList():
+    username = session["username"]
+    name = request.form["listname"]
+    userlists.createNewList(db, username, name)
+    return redirect("/lists")
