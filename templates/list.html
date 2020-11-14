@@ -1,0 +1,29 @@
+<h1>{{ name }}</h1>
+{% if session.username %}
+<p>Logged in as {{ session.username }}</p>
+<a href="/logout">Logout</a>
+<br>
+<ul>
+    <li><a href="/home">Home</a></a>
+    <li><a href="/lists">Lists</a></a>
+    <li><a href="/home">Friends</a></a>
+    <li><a href="/home">Search</a></a>
+    <li><a href="/home">FAQ/Info</a></a>
+</ul>
+<br>
+<p>Add card</p>
+<form action="/lists/{{ session.username }}/{{ name }}" method="POST">
+    <p>Word:<br>
+    <input type="text" name="word"></p>
+    <p>Translation:</p>
+    <input type="text" name="translation"></p>
+    <input type="submit" value="Add">
+</form>
+<p>
+{% for card in cards %}
+<li>{{ card[0] }} {{ card[1] }} {{ card[2] }}
+<p>
+{% endfor %}
+{% else %}
+<a href="/">Login</a>
+{% endif %}

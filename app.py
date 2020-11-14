@@ -3,6 +3,7 @@ from flask import redirect, render_template, request, session
 from os import getenv
 import database
 import userlists
+import userlist
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -81,3 +82,16 @@ def listsNewList():
     name = request.form["listname"]
     userlists.createNewList(db, username, name)
     return redirect("/lists")
+
+@app.route("/lists/<username>/<name>")
+def showlist(username, name):
+    username = session["username"]
+    cards = userlist.showCards(db, username, name)
+    return render_template("list.html", name=name, cards=cards)
+
+@app.route("/lists/<username>/<name>", methods=["POST"])
+def newCardToList(username, name):
+    word = request.form["word"]
+    translation = request.form["translation"]
+    userlist.addCardToList(db,username,name,word,translation)
+    return redirect("/lists/" + username + "/" + name)

@@ -4,7 +4,7 @@ from flask import render_template
 from os import getenv
 from werkzeug.security import check_password_hash, generate_password_hash
 
-
+#Lists all lists of a user
 def listLists(SQLAlchemy, username):
     
     sql = "SELECT name FROM lists WHERE userid=:userId"
@@ -15,6 +15,7 @@ def listLists(SQLAlchemy, username):
     lists = getLists.fetchall()
     return lists
 
+#Creates a new list
 def createNewList(SQLAlchemy, username, name):
 
     sql = "SELECT id FROM userinfo WHERE username=:username"
@@ -31,3 +32,9 @@ def createNewList(SQLAlchemy, username, name):
     SQLAlchemy.session.execute(sql2, {"userid":userId, "name":name})
     SQLAlchemy.session.commit()
     return True
+
+def deleteList():
+    i=0
+
+def editList():
+    i=0

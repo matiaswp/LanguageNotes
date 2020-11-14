@@ -19,7 +19,7 @@
 </form>
 <p>
 {% for list in lists %}
-{{ list[0] }}
+<a href="/lists/{{ session.username }}/{{ list[0] }}">{{ list[0] }}</a>
 <p>
 {% endfor %}
 {% else %}
