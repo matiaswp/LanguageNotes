@@ -9,3 +9,15 @@ The place for your own vocabulary and grammar notes.
 + Users can follow other users.
 + You can import other users' lists to your own collection of lists.
 
+App status
+At the moment you can:
++ Create an account and login.
++ Create lists for your account.
++ Add cards inside your lists.
+
+How to test the app?
++ Go to https://enigmatic-taiga-82164.herokuapp.com/
++ Create an account or login using existing account. 
++ At the moment, only homepage and listspage has content. 
++ Go check those out and try to create lists and add cards in lists.
++ You can enter a list by clicking the name of the list. 
