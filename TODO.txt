@@ -1,0 +1,11 @@
+This is a todo list. It propably does not contain everything I need to do,
+but some important things.
+
+- Code refactoring (for ex. remove repeating code)
+- Add proper referencing in databases
+- Add UNIQUE on name in users table in database
+- A good and easy way to delete lists and cards
+- A good way to edit lists and cards
+- Rest of functionality and pages
+- Add "login failed" when wrong password or username
+- Add "registeration failed" when passwords dont match or username is taken
