@@ -78,8 +78,10 @@ def lists():
 #For creating a new list
 @app.route("/lists", methods=["POST"])
 def listsNewList():
+    
     username = session["username"]
     name = request.form["listname"]
+    value = request.form["listname"]
     userlists.createNewList(db, username, name)
     return redirect("/lists")
 
@@ -92,6 +94,21 @@ def showlist(username, name):
 @app.route("/lists/<username>/<name>", methods=["POST"])
 def newCardToList(username, name):
     word = request.form["word"]
+    
     translation = request.form["translation"]
     userlist.addCardToList(db,username,name,word,translation)
     return redirect("/lists/" + username + "/" + name)
+
+@app.route("/edit/<name>", methods=["POST"])
+def editList(name):
+    username = session["username"]
+
+    if request.form['btn'] == 'edit':
+        
+        return redirect("/")
+    else:
+        userlists.deleteList(db,username,name)
+        return redirect("/home")
+
+def editCard():
+    i=0

@@ -18,11 +18,20 @@ def addCardToList(SQLAlchemy, username, name, word, translation):
     SQLAlchemy.session.execute(sql3, {"word":word,"translation":translation,"listid":listId})
     SQLAlchemy.session.commit()
 
-def removeCardFromList():
-    i=0
+#Removes a card from list
+def removeCardFromList(listid, word, translation):
 
-def editCard():
-    i=0
+    sql3 = "DELETE FROM cards WHERE word=:word AND listid=:listid AND translation=:translation"
+    SQLAlchemy.session.execute(sql3, {"list":listid, "word":word, "translation":translation})
+    SQLAlchemy.session.commit()
+
+#Edit card
+def editCard(listid, word, translation, newWord, newTranslation):
+    
+    sql3 = "UPDATE cards SET word='"+newWord+"', translation='"+newTranslation+"' WHERE listid='"+str(listid)+"' AND word='"+word+"' AND translation='"+translation+"'"
+    SQLAlchemy.session.execute(sql3)
+    SQLAlchemy.session.commit()
+
 
 #Returns all cards from given list
 def showCards(SQLAlchemy, username, name):

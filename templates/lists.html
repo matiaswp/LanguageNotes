@@ -19,8 +19,13 @@
 </form>
 <p>
 {% for list in lists %}
-<a href="/lists/{{ session.username }}/{{ list[0] }}">{{ list[0] }}</a>
-<p>
+<form action="/edit/{{ list[0] }}" method="POST">
+    <a href="/lists/{{ session.username }}/{{ list[0] }}">{{ list[0] }}</a>
+    <input type="submit" name="btn" value="edit">
+    <input type="submit" name="btn" value="delete"><p>   
+    <p>
+</form>
+
 {% endfor %}
 {% else %}
 <a href="/">Login</a>
