@@ -1,5 +1,5 @@
 This is a todo list. It propably does not contain everything I need to do,
-but some important things.
+but some important things
 
 - Code refactoring (for ex. remove repeating code)
 - Add proper referencing in databases
