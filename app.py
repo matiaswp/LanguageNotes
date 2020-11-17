@@ -108,7 +108,7 @@ def editList(name):
         return redirect("/")
     else:
         userlists.deleteList(db,username,name)
-        return redirect("/home")
+        return redirect("/lists")
 
 def editCard():
     i=0
