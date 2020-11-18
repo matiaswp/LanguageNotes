@@ -4,7 +4,6 @@ but some important things
 - Code refactoring (for ex. remove repeating code)
 - Add proper referencing in databases
 - Add UNIQUE on name in users table in database
-- A good way to edit lists and cards
 - Rest of functionality and pages
 - Add "login failed" when wrong password or username
 - Add "registeration failed" when passwords dont match or username is taken
@@ -13,3 +12,5 @@ but some important things
 - Combine GET and POST to same function
 - Improve SQL queries
 - Chenge function and variable names so that they use underscores
+- Overall error messages for users
+- Popup window for renaming lists and cards

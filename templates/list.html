@@ -31,6 +31,17 @@
         <input type="submit" name="btn" value="delete">
         </li>
     </form>
+
+    <div>
+        <form action="/lists/{{ session.username }}/{{ name }}/edit" method="POST">
+            <input type=hidden value="{{ card[0] }}" name="word">
+            <input type=hidden value="{{ card[1] }}" name="translation">
+            <input type="hidden" name="listname" value="{{ name }}">
+            <input type="text" name="newWord" value="{{ card[0] }}" required>
+            <input type="text" name="newTranslation" value="{{ card[1] }}" required>
+            <input type="submit" value="Rename">
+        </form>
+    </div>
 <p>
 </ul>
 {% endfor %}

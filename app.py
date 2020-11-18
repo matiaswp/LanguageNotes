@@ -89,7 +89,7 @@ def new_list():
 
 #Shows cards in list
 @app.route("/lists/<username>/<name>")
-def showlist(username, name):
+def show_list(username, name):
     username = session["username"]
     cards = userlist.showCards(db, username, name)
     return render_template("list.html", name=name, cards=cards)
@@ -107,23 +107,35 @@ def new_card_to_list(username, name):
 @app.route("/delete/<name>", methods=["POST"])
 def delete_list(name):
     username = session["username"]
-
     userlists.deleteList(db, username, name)
     return redirect("/lists")
 
 #Edits a list
-@app.route("/edit/<name>", methods=["POST"])
-def edit_list(name):
+@app.route("/lists/edit", methods=["POST"])
+def edit_list():
     username = session["username"]
+    listname = request.form["listname"]
     newName = request.form["newName"]
-    userlists.editList(db, username, name, newName)
+    print(newName)
+    userlists.editList(db, username, listname, newName)
     return redirect("/lists")
 
 #Delete a card in list
 @app.route("/lists/<username>/<listname>/delete", methods=["POST"])
 def delete_card(username, listname):
+
     username = session["username"]
     word = request.form["word"]
     translation = request.form["translation"]
     userlist.remove_card_from_list(db, username, listname, word, translation)
+    return redirect("/lists/" + username + "/" + listname)
+
+#Edit the contents of a card
+@app.route("/lists/<username>/<listname>/edit", methods=["POST"])
+def edit_card(username, listname):
+    word = request.form["word"]
+    translation = request.form["translation"]
+    new_word = request.form["newWord"]
+    new_translation = request.form["newTranslation"]
+    userlist.editCard(db, listname, username, word, translation, new_word, new_translation)
     return redirect("/lists/" + username + "/" + listname)

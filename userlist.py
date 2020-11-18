@@ -36,10 +36,17 @@ def remove_card_from_list(SQLAlchemy, username, listname, word, translation):
     SQLAlchemy.session.commit()
 
 #Edit card
-def editCard(SQLAlchemy, listname, word, translation, newWord, newTranslation):
-    
+def editCard(SQLAlchemy, listname, username, word, translation, newWord, newTranslation):
+    sql = "SELECT id FROM userinfo WHERE username=:username"
+    getId = SQLAlchemy.session.execute(sql, {"username":username})
+    userId = getId.fetchone()[0]
+
+    sql2 = "SELECT id FROM lists WHERE userid=:userid AND name=:name"
+    getList = SQLAlchemy.session.execute(sql2, {"userid":userId, "name":listname})
+    listid = getList.fetchone()[0]
+
     sql3 = "UPDATE cards SET word='"+newWord+"', translation='"+newTranslation+\
-        "' WHERE listid='"+str(listname)+"' AND word='"+word+"' AND translation='"\
+        "' WHERE listid='"+str(listid)+"' AND word='"+word+"' AND translation='"\
             +translation+"'"
     SQLAlchemy.session.execute(sql3)
     SQLAlchemy.session.commit()
@@ -55,7 +62,7 @@ def showCards(SQLAlchemy, username, name):
     getList = SQLAlchemy.session.execute(sql2, {"userid":userId, "name":name})
     listId = getList.fetchone()[0]
 
-    sql3 = "SELECT word, translation, date FROM cards WHERE listid=:listid"
+    sql3 = "SELECT word, translation, date FROM cards WHERE listid=:listid ORDER BY date"
     getCards = SQLAlchemy.session.execute(sql3, {"listid":listId})
     cards = getCards.fetchall()
 

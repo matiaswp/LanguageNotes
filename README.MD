@@ -15,10 +15,13 @@ At the moment you can:
 + Create lists for your account.
 + Add cards inside your lists.
 + Delete lists
++ Delete cards
++ Edit listnames
++ Edit card content
 
 How to test the app?
 + Go to https://enigmatic-taiga-82164.herokuapp.com/
 + Create an account or login using existing account. 
 + At the moment, only homepage and listspage has content. 
-+ Go check those out and try to create and delete lists and add cards in lists.
++ Go check those out and try to create, delete and edit lists and cards.
 + You can enter a list by clicking the name of the list. 
