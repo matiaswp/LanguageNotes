@@ -11,22 +11,42 @@
     <li><a href="/home">FAQ/Info</a></a>
 </ul>
 <br>
-<p>Creata a new list</p>
+<label>Creata a new list</p>
 <form action="/lists" method="POST">
-    <p>Name for the list:<br>
+    <label>Name for the list:<br>
     <input type="text" name="listname"></p>
     <input type="submit" value="Create">
 </form>
 <p>
 {% for list in lists %}
-<form action="/edit/{{ list[0] }}" method="POST">
+<form action="/delete/{{ list[0] }}" method="POST">
     <a href="/lists/{{ session.username }}/{{ list[0] }}">{{ list[0] }}</a>
-    <input type="submit" name="btn" value="edit">
+    <input type="button" name="openButton" value="edit" onclick="openForm()">
     <input type="submit" name="btn" value="delete"><p>   
     <p>
 </form>
+<div id="editForm" style="display:none">
+    <form action="/edit/{{ list[0] }}">
+  
+      <label for="email"><b>New Name</b></label>
+      <input type="text" placeholder="New name" name="newName" required>
 
+      <button type="submit" onclick="closeForm()">Close</button>
+    </form>
+  </div>
 {% endfor %}
 {% else %}
 <a href="/">Login</a>
 {% endif %}
+
+
+<script>
+
+function openForm() {
+  document.getElementById("editForm").style.display = "block";
+}
+
+function closeForm() {
+  document.getElementById("editForm").style.display = "none";
+}
+</script>

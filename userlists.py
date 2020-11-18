@@ -61,7 +61,8 @@ def editList(SQLAlchemy, username, listname, newName):
     getList = SQLAlchemy.session.execute(sql2, {"userid":userId, "name":listname})
     listId = getList.fetchone()[0]
 
-    sql3 = "UPDATE lists SET name='"+newName+"' WHERE id="+str(userId)+" AND name='"+listname+"'"
+    sql3 = "UPDATE lists SET name='"+newName+"' WHERE id="+str(userId)+\
+        " AND name='"+listname+"'"
     SQLAlchemy.session.execute(sql3)
     SQLAlchemy.session.commit()
 

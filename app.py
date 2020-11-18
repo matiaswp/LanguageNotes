@@ -47,7 +47,7 @@ def home():
 
 #Shows register page
 @app.route("/register")
-def registerPage():
+def register_page():
     return render_template("register.html")
 
 #For creating a new account
@@ -77,38 +77,53 @@ def lists():
 
 #For creating a new list
 @app.route("/lists", methods=["POST"])
-def listsNewList():
+def new_list():
     
     username = session["username"]
     name = request.form["listname"]
-    value = request.form["listname"]
+    if name.strip() == "":
+        return redirect("/lists")
+    
     userlists.createNewList(db, username, name)
     return redirect("/lists")
 
+#Shows cards in list
 @app.route("/lists/<username>/<name>")
 def showlist(username, name):
     username = session["username"]
     cards = userlist.showCards(db, username, name)
     return render_template("list.html", name=name, cards=cards)
 
+#Create new card in list
 @app.route("/lists/<username>/<name>", methods=["POST"])
-def newCardToList(username, name):
+def new_card_to_list(username, name):
     word = request.form["word"]
     
     translation = request.form["translation"]
-    userlist.addCardToList(db,username,name,word,translation)
+    userlist.addCardToList(db,username, name, word, translation)
     return redirect("/lists/" + username + "/" + name)
 
-@app.route("/edit/<name>", methods=["POST"])
-def editList(name):
+#Deletes a list
+@app.route("/delete/<name>", methods=["POST"])
+def delete_list(name):
     username = session["username"]
 
-    if request.form['btn'] == 'edit':
-        
-        return redirect("/")
-    else:
-        userlists.deleteList(db,username,name)
-        return redirect("/lists")
+    userlists.deleteList(db, username, name)
+    return redirect("/lists")
 
-def editCard():
-    i=0
+#Edits a list
+@app.route("/edit/<name>", methods=["POST"])
+def edit_list(name):
+    username = session["username"]
+    newName = request.form["newName"]
+    userlists.editList(db, username, name, newName)
+    return redirect("/lists")
+
+#Delete a card in list
+@app.route("/lists/<username>/<listname>/delete", methods=["POST"])
+def delete_card(username, listname):
+    username = session["username"]
+    word = request.form["word"]
+    translation = request.form["translation"]
+    userlist.remove_card_from_list(db, username, listname, word, translation)
+    return redirect("/lists/" + username + "/" + listname)

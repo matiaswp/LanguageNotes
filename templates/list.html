@@ -20,9 +20,19 @@
     <input type="submit" value="Add">
 </form>
 <p>
+    <h3>Cards: </h3>
 {% for card in cards %}
-<li>{{ card[0] }} {{ card[1] }} {{ card[2] }}
+<ul>
+    <form action="/lists/{{ session.username }}/{{ name }}/delete" method="POST">
+        <li>{{ card[0] }} {{ card[1] }} {{ card[2] }}
+        <input type=hidden value="{{ card[0] }}" name="word">
+        <input type=hidden value="{{ card[1] }}" name="translation">
+        <input type=hidden value="{{ name }}" name="listname">
+        <input type="submit" name="btn" value="delete">
+        </li>
+    </form>
 <p>
+</ul>
 {% endfor %}
 {% else %}
 <a href="/">Login</a>
