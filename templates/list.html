@@ -5,14 +5,14 @@
 <br>
 <ul>
     <li><a href="/home">Home</a></a>
-    <li><a href="/lists">Lists</a></a>
+    <li><a href="/user/{{ session.username }}/mylists">Lists</a></a>
     <li><a href="/home">Friends</a></a>
     <li><a href="/home">Search</a></a>
     <li><a href="/home">FAQ/Info</a></a>
 </ul>
 <br>
 <p>Add card</p>
-<form action="/lists/{{ session.username }}/{{ name }}" method="POST">
+<form action="/user/{{ session.username }}/mylists/{{ name }}" method="POST">
     <p>Word:<br>
     <input type="text" name="word"></p>
     <p>Translation:</p>
@@ -23,7 +23,7 @@
     <h3>Cards: </h3>
 {% for card in cards %}
 <ul>
-    <form action="/lists/{{ session.username }}/{{ name }}/delete" method="POST">
+    <form action="/user/{{ session.username }}/mylists/{{ name }}/deletecard" method="POST">
         <li>{{ card[0] }} {{ card[1] }} {{ card[2] }}
         <input type=hidden value="{{ card[0] }}" name="word">
         <input type=hidden value="{{ card[1] }}" name="translation">
@@ -33,7 +33,7 @@
     </form>
 
     <div>
-        <form action="/lists/{{ session.username }}/{{ name }}/edit" method="POST">
+        <form action="/user/{{ session.username }}/mylists/{{ name }}/editcard" method="POST">
             <input type=hidden value="{{ card[0] }}" name="word">
             <input type=hidden value="{{ card[1] }}" name="translation">
             <input type="hidden" name="listname" value="{{ name }}">

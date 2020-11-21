@@ -1,0 +1,47 @@
+<h1>Flashcard mode</h1>
+
+<b id="listLength" value="{{ length }}">Cards in list: {{ length }}</b>
+<div id="cardfront">
+    <input type="button" name="flip" value="flip" onclick="flash()">
+    
+
+
+</div>
+<b id="meaningCard">{{ cards[0].word }}</b>
+<div id="cardback" style="visibility:hidden">
+    <input type="button" name="flip" value="Next card" onclick="nextCard()">
+    <b id="answerCard">{{ cards[0].translation }}</b>
+</div>
+
+
+<script>
+    function flash() {
+        if (cardfront.style.visivility != "hidden") {
+            document.getElementById("cardfront").style.visibility = "hidden";
+            document.getElementById("cardback").style.visibility = "visible";
+        } 
+    }
+    let words = [];
+    let translations = [];
+    let currentCard = 1;
+    {% for card in cards %}
+    words.push("{{ card[0] }}")
+    translations.push("{{ card[1] }}");
+    {% endfor %}
+
+    {% raw %}
+    function nextCard() {
+        document.getElementById("cardfront").style.visibility = "visible";
+        document.getElementById("cardback").style.visibility = "hidden";
+        
+        if (translations.length >  currentCard) {
+            document.getElementById("meaningCard").textContent = words[currentCard];
+            document.getElementById("answerCard").textContent = translations[currentCard];
+            currentCard++;    
+        }
+        
+        
+    }
+    {% endraw %}
+
+</script>

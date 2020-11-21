@@ -2,7 +2,6 @@ This is a todo list. It propably does not contain everything I need to do,
 but some important things
 
 - Code refactoring (for ex. remove repeating code)
-- Add proper referencing in databases
 - Add UNIQUE on name in users table in database
 - Rest of functionality and pages
 - Add "login failed" when wrong password or username
@@ -14,3 +13,7 @@ but some important things
 - Chenge function and variable names so that they use underscores
 - Overall error messages for users
 - Popup window for renaming lists and cards
+- Validation of forms
+- Fix: Deletes all same value cards
+- No same name lists for same user
+- When viewing other user's lists, hide edit and delete options

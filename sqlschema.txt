@@ -1,0 +1,32 @@
+CREATE TABLE userinfo (
+    id INTEGER PRIMARY KEY,
+    username TEXT,
+    password TEXT
+)
+
+CREATE TABLE lists (
+    id INTEGER PRIMARY KEY,
+    userid INTEGER REFERENCES userinfo,
+    name TEXT
+)
+
+CREATE TABLE cards (
+    id INTEGER PRIMARY KEY,
+    listid INTEGER REFERENCES lists,
+    word TEXT,
+    translation TEXT,
+    date DATE,
+    difficulty INTEGER
+)
+
+CREATE TABLE follow (
+    id INTEGER PRIMARY KEY,
+    follower_userid INTEGER REFERENCES userinfo,
+    following_userid INTEGER REFERENCES userinfo
+)
+
+CREATE TABLE languages (
+    id INTEGER PRIMARY KEY,
+    language TEXT,
+    userid INTEGER REFERENCES userinfo
+)

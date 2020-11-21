@@ -41,9 +41,8 @@ def logout():
 #Shows home page
 @app.route("/home")
 def home():
-    #The next line is only temporary and for testing purposes
-    messages = database.users(db) 
-    return render_template("home.html", messages=messages)
+
+    return render_template("home.html")
 
 #Shows register page
 @app.route("/register")
@@ -67,75 +66,90 @@ def register():
     else:
         return redirect("/register")
 
-#Shows lists page
-@app.route("/lists")    
-def lists():
-    username = session["username"]
-    print(username)
-    usersList = userlists.listLists(db,username)
-    return render_template("lists.html", lists=usersList)
+#Shows lists and creates new lists
+@app.route("/user/<username>/mylists", methods=["GET", "POST"])    
+def lists(username):
+    allow = False
+    if request.method == "POST":
+        if session["username"] != username:
+            return redirect("/user/" + username + "/mylists")
+        username = session["username"]
+        name = request.form["listname"]
+        if name.strip() == "":
+            return redirect("/user/" + username + "/mylists")
+    
+        userlists.create_new_list(db, username, name)
+        return redirect("/user/" + username + "/mylists")
+    else:       
+        
+        usersList = userlists.listLists(db,username)
+        return render_template("lists.html", lists=usersList)
 
-#For creating a new list
-@app.route("/lists", methods=["POST"])
-def new_list():
-    
-    username = session["username"]
-    name = request.form["listname"]
-    if name.strip() == "":
-        return redirect("/lists")
-    
-    userlists.createNewList(db, username, name)
-    return redirect("/lists")
 
 #Shows cards in list
-@app.route("/lists/<username>/<name>")
+@app.route("/user/<username>/mylists/<name>")
 def show_list(username, name):
     username = session["username"]
     cards = userlist.showCards(db, username, name)
     return render_template("list.html", name=name, cards=cards)
 
 #Create new card in list
-@app.route("/lists/<username>/<name>", methods=["POST"])
+@app.route("/user/<username>/mylists/<name>", methods=["POST"])
 def new_card_to_list(username, name):
     word = request.form["word"]
     
     translation = request.form["translation"]
     userlist.addCardToList(db,username, name, word, translation)
-    return redirect("/lists/" + username + "/" + name)
+    return redirect("/user/" + username + "/mylists/" + name)
 
 #Deletes a list
-@app.route("/delete/<name>", methods=["POST"])
-def delete_list(name):
+@app.route("/user/<username>/mylists/<listname>/delete", methods=["POST"])
+def delete_list(username, listname):
+    if session["username"] != username:
+        return redirect("/user/" + username + "/mylists")
     username = session["username"]
-    userlists.deleteList(db, username, name)
-    return redirect("/lists")
+    userlists.deleteList(db, username, listname)
+    return redirect("/user/" + username + "/mylists")
 
 #Edits a list
-@app.route("/lists/edit", methods=["POST"])
-def edit_list():
+@app.route("/user/<username>/mylists/<listname>/edit", methods=["POST"])
+def edit_list(username, listname):
+    if session["username"] != username:
+        return redirect("/user/" + username + "/mylists")
     username = session["username"]
     listname = request.form["listname"]
     newName = request.form["newName"]
     print(newName)
     userlists.editList(db, username, listname, newName)
-    return redirect("/lists")
+    return redirect("/user/" + username + "/mylists")
 
 #Delete a card in list
-@app.route("/lists/<username>/<listname>/delete", methods=["POST"])
+@app.route("/user/<username>/mylists/<listname>/deletecard", methods=["POST"])
 def delete_card(username, listname):
-
+    if session["username"] != username:
+        return redirect("/user/" + username + "/mylists/" + listname)
     username = session["username"]
     word = request.form["word"]
     translation = request.form["translation"]
     userlist.remove_card_from_list(db, username, listname, word, translation)
-    return redirect("/lists/" + username + "/" + listname)
+    return redirect("/user/" + username + "/mylists/" + listname)
 
 #Edit the contents of a card
-@app.route("/lists/<username>/<listname>/edit", methods=["POST"])
+@app.route("/user/<username>/mylists/<listname>/editcard", methods=["POST"])
 def edit_card(username, listname):
+    if session["username"] != username:
+        return redirect("/user/" + username + "/mylists/" + listname)
     word = request.form["word"]
     translation = request.form["translation"]
     new_word = request.form["newWord"]
     new_translation = request.form["newTranslation"]
     userlist.editCard(db, listname, username, word, translation, new_word, new_translation)
-    return redirect("/lists/" + username + "/" + listname)
+    return redirect("/user/" + username + "/mylists/" + listname)
+
+#Shows flashcard mode
+@app.route("/user/<username>/mylists/<listname>/study")
+def flashcard(username, listname):
+    username = session["username"]
+    cards = userlist.showCards(db, username, listname)
+    length = len(cards)
+    return render_template("flashcard.html", cards=cards, length=length)
