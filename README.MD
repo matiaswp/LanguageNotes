@@ -1,27 +1,28 @@
 README.md
-LanguageNotes
-The place for your own vocabulary and grammar notes.
+LanguageNotes. The place for your own vocabulary and grammar notes.
 
-+ Users can create an account to the website.
-+ Users can create lists for grammar and vocabulary. You can add, edit and delete cards in lists.
-+ Users can enter learning mode in lists. One "side" of the card will be hidden and you quess the meaning of that word or grammar point etc.
-+ Learning mode uses spaced repetition system. Already learned cards will reappear after  certain period (after 1 day then after 3 days then after 6 days etc)
-+ Users can follow other users.
-+ You can import other users' lists to your own collection of lists.
+Features / App status: 
++ You can create an account. 
++ You can can make lists for your own vocabulary and grammar cards.
++ You can also edit or delete lists or cards.
++ You can enter study mode where you will be presented with flashcards from your chosen list.
++ Study mode uses SRS. You can learn more about SRS here: https://en.wikipedia.org/wiki/Spaced_repetition
++ You can import other users' lists to your own collection.
++ You can follow other users.
++ You can show your hobbies and languages that you are learning in your profile.
 
 App status
 At the moment you can:
 + Create an account and login.
-+ Create lists for your account.
-+ Add cards inside your lists.
-+ Delete lists
-+ Delete cards
-+ Edit listnames
-+ Edit card content
++ Create, edit and delete lists.
++ Create, edit and delete cards inside lists.
++ Search and view other users' profile page.
++ Enter study mode.
+You can view some TODO-stuff in TODO.txt file. Might not include everything.
 
 How to test the app?
 + Go to https://enigmatic-taiga-82164.herokuapp.com/
 + Create an account or login using existing account. 
-+ At the moment, only homepage and listspage has content. 
++ Home-, mylists- and profilepages have content. 
 + Go check those out and try to create, delete and edit lists and cards.
-+ You can enter a list by clicking the name of the list. 
++ You can enter a list by clicking the name of the list and enter study mode by clicking "Study" inside a list. 

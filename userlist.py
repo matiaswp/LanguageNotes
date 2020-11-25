@@ -48,7 +48,7 @@ def editCard(SQLAlchemy, listname, username, word, translation, newWord, newTran
     list_id = getList.fetchone()[0]
 
     sql3 = "UPDATE cards SET word='"+newWord+"', translation='"+newTranslation+\
-        "' WHERE list_id='"+str(list_id)+"' AND word='"+word+"' AND translation='"\
+        "' WHERE list_id='" + str(list_id) + "' AND word='"+word+"' AND translation='"\
             +translation+"'"
     SQLAlchemy.session.execute(sql3)
     SQLAlchemy.session.commit()
@@ -56,6 +56,7 @@ def editCard(SQLAlchemy, listname, username, word, translation, newWord, newTran
 
 #Returns all cards from given list
 def showCards(SQLAlchemy, username, name):
+
     sql = "SELECT id FROM userinfo WHERE username=:username"
     getId = SQLAlchemy.session.execute(sql, {"username":username})
     user_id = getId.fetchone()[0]
@@ -69,3 +70,46 @@ def showCards(SQLAlchemy, username, name):
     cards = getCards.fetchall()
 
     return cards
+
+def add_more_date(SQLAlchemy, username, listname, word, translation, answer):
+    sql = "SELECT id FROM userinfo WHERE username=:username"
+    getId = SQLAlchemy.session.execute(sql, {"username":username})
+    user_id = getId.fetchone()[0]
+
+    sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
+    getList = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
+    list_id = getList.fetchone()[0]
+
+    sql3 = "SELECT id, difficulty FROM cards WHERE word=:word AND "\
+            "translation=:translation AND list_id=:listid"
+    get_card = SQLAlchemy.session.execute(sql3, {"word":word, "translation":translation, 
+        "list_id":list_id})
+    card_id = get_card.fetchone()[0]
+    difficulty = get_card.fetchone()[1]
+
+    sql4 = "UPDATE cards SET difficulty=:newDiff, date=NOW()+:date WHERE id=" + card_id
+    if answer == "correct":
+        if difficulty == 1:
+            date = 1
+            new_diff = difficulty + 1
+        elif difficulty == 2:
+            date = 2
+            new_diff = difficulty + 1
+        elif difficulty == 3:
+            date = 5
+            new_diff = difficulty + 1
+        elif difficulty == 4:
+            date = 9
+            new_diff = difficulty + 1
+        elif difficulty == 5:
+            date = 14
+            new_diff = difficulty
+
+        
+        SQLAlchemy.session.execute(sql4, {"difficulty":new_diff, "date":date})
+        SQLAlchemy.session.commit()
+    else:
+        date = 1
+        SQLAlchemy.session.execute(sql4, {"difficulty":1, "date":date})
+        SQLAlchemy.session.commit()
+

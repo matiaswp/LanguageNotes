@@ -1,0 +1,21 @@
+{% if session.username %}
+<p>Logged in as {{ session.username }}</p>
+<a href="/logout">Logout</a>
+{% else %}
+<a href="/">Login</a>
+{% endif %}
+
+<br>
+<ul>
+    <li><a href="/home">Home</a></a>
+    <li><a href="/user/{{ session.username }}/mylists">My lists</a></a>
+    <li><a href="/user/{{ session.username }}/following">Following (not working yet)</a></a>
+    <li><a href="/user/{{ session.username }}/profile">Profile</a></a>
+    <li><a href="/info">Info & About</a></a>
+</ul>
+<h1>Search users</h1>
+<form action="/search" method="POST">
+<input type="text" placeholder="Enter username" name="search">
+<input type="submit" value="Search">
+</form>
+{% block content %}{% endblock %}

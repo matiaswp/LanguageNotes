@@ -2,7 +2,6 @@ This is a todo list. It propably does not contain everything I need to do,
 but some important things
 
 - Code refactoring (for ex. remove repeating code)
-- Add UNIQUE on name in users table in database
 - Rest of functionality and pages
 - Add "login failed" when wrong password or username
 - Add "registeration failed" when passwords dont match or username is taken
@@ -11,9 +10,11 @@ but some important things
 - Combine GET and POST to same function
 - Improve SQL queries
 - Chenge function and variable names so that they use underscores
-- Overall error messages for users
-- Popup window for renaming lists and cards
+- Overall error messages for users (for.ex. empty listname, duplicate listname etc...)
+- Popup window for editing lists and cards
 - Validation of forms
 - Fix: Deletes all same value cards
-- No same name lists for same user
-- When viewing other user's lists, hide edit and delete options
+- Spaced repetition system for cards
+- CSRF protection
+- View other users' lists' content
+- Make this app good looking (:

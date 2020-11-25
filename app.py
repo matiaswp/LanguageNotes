@@ -69,7 +69,7 @@ def register():
 #Shows lists and creates new lists
 @app.route("/user/<username>/mylists", methods=["GET", "POST"])    
 def lists(username):
-    allow = False
+    access = "false"
     if request.method == "POST":
         if session["username"] != username:
             return redirect("/user/" + username + "/mylists")
@@ -81,26 +81,27 @@ def lists(username):
         userlists.create_new_list(db, username, name)
         return redirect("/user/" + username + "/mylists")
     else:       
+        if session["username"] == username:
+            user_list = userlists.listLists(db,username)
+            return render_template("mylists.html", lists=user_list, access=access)
+        else:
+            return redirect("/user/" + session["usernane"] + "/mylists")
         
-        usersList = userlists.listLists(db,username)
-        return render_template("lists.html", lists=usersList)
-
-
 #Shows cards in list
-@app.route("/user/<username>/mylists/<name>")
-def show_list(username, name):
+@app.route("/user/<username>/mylists/<listname>")
+def show_list(username, listname):
     username = session["username"]
-    cards = userlist.showCards(db, username, name)
-    return render_template("list.html", name=name, cards=cards)
+    cards = userlist.showCards(db, username, listname)
+    return render_template("mylist.html", listname=listname, cards=cards)
 
 #Create new card in list
-@app.route("/user/<username>/mylists/<name>", methods=["POST"])
-def new_card_to_list(username, name):
+@app.route("/user/<username>/mylists/<listname>", methods=["POST"])
+def new_card_to_list(username, listname):
     word = request.form["word"]
     
     translation = request.form["translation"]
-    userlist.addCardToList(db,username, name, word, translation)
-    return redirect("/user/" + username + "/mylists/" + name)
+    userlist.addCardToList(db,username, listname, word, translation)
+    return redirect("/user/" + username + "/mylists/" + listname)
 
 #Deletes a list
 @app.route("/user/<username>/mylists/<listname>/delete", methods=["POST"])
@@ -147,9 +148,55 @@ def edit_card(username, listname):
     return redirect("/user/" + username + "/mylists/" + listname)
 
 #Shows flashcard mode
-@app.route("/user/<username>/mylists/<listname>/study")
+@app.route("/user/<username>/mylists/<listname>/study", methods=["GET", "POST"])
 def flashcard(username, listname):
-    username = session["username"]
-    cards = userlist.showCards(db, username, listname)
-    length = len(cards)
-    return render_template("flashcard.html", cards=cards, length=length)
+    if request.method == "POST":
+        word = request.form["word"]
+        translation = request.form["translation"]
+
+        if request.form.action == "Got it!":
+            userlist.add_more_date(db, username, listname, word, translation, "correct")
+        else:
+            userlist.add_more_date(db, username, listname, word, translation, "wrong")
+
+        return True
+    else:
+        username = session["username"]
+        cards = userlist.showCards(db, username, listname)
+        length = len(cards)
+        return render_template("flashcard.html", cards=cards, length=length, 
+        listname=listname)
+
+#Shows user's profile page. You can also clone other users' lists to you own collection here
+@app.route("/user/<username>/profile")
+def profile(username):
+    user_list = userlists.listLists(db,username)
+    if user_list == False:
+        return render_template("profile.html", username="User does not exist", lists="")
+    return render_template("profile.html", lists=user_list, username=username)
+
+#Edit your profile
+@app.route("/user/<username>/profile/edit")
+def edit_profile(username):
+    return render_template("editprofile.html")
+
+#Shows a list of a given user
+@app.route("/user/<username>/lists/<listname>")
+def user_list(username, listname):
+    return render_template(".html")
+
+#Shows who you are following
+app.route("/user/<username>/following")
+def following(username):
+    return render_template("following.html")
+
+#Shows info/about page
+@app.route("/info")
+def info_about():
+    return render_template("infoabout.html")
+
+#Used to search people
+@app.route("/search", methods=["POST"])
+def search():
+    username = request.form["search"]
+    return redirect("/user/" + username + "/profile")

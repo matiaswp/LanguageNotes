@@ -11,7 +11,10 @@ def listLists(SQLAlchemy, username):
     sql2 = "SELECT id FROM userinfo WHERE username=:username"
 
     getId = SQLAlchemy.session.execute(sql2, {"username":username})
-    user_id = getId.fetchone()[0]
+    try:
+        user_id = getId.fetchone()[0]
+    except:
+        return False
 
     getLists = SQLAlchemy.session.execute(sql, {"user_id":user_id})
     lists = getLists.fetchall()
@@ -25,15 +28,19 @@ def create_new_list(SQLAlchemy, username, listname):
     getId = SQLAlchemy.session.execute(sql, {"username":username})
     user_id = getId.fetchone()[0]
 
-    ql = "SELECT name FROM lists WHERE user_id=:user_id"
-    getLists = SQLAlchemy.session.execute(ql, {"user_id":user_id})
-    lists = getLists.fetchall()
+    ql = "SELECT id FROM lists WHERE user_id=:user_id AND name=:listname"
+    get_lists = SQLAlchemy.session.execute(ql, {"user_id":user_id, "listname":listname})
 
-    
-    sql2 = "INSERT INTO lists (user_id, name) VALUES (:user_id, :name)"
-    SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
-    SQLAlchemy.session.commit()
-    
+    try:
+        get_list = get_lists.fetchone()[0]
+    except:
+        
+
+        sql2 = "INSERT INTO lists (user_id, name) VALUES (:user_id, :name)"
+        SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
+        SQLAlchemy.session.commit()
+        return True
+    return False
 
 #Deletes the list and all the cards in it
 def deleteList(SQLAlchemy, username, listname):
@@ -69,7 +76,7 @@ def editList(SQLAlchemy, username, listname, newName):
     SQLAlchemy.session.commit()
 
 #For future refactoring
-def getuser_id():
+def get_user_id():
     i=0
 
 #For future refactoring

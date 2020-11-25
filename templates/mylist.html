@@ -1,18 +1,11 @@
-<h1>{{ name }}</h1>
-{% if session.username %}
-<p>Logged in as {{ session.username }}</p>
-<a href="/logout">Logout</a>
-<br>
-<ul>
-    <li><a href="/home">Home</a></a>
-    <li><a href="/user/{{ session.username }}/mylists">Lists</a></a>
-    <li><a href="/home">Friends</a></a>
-    <li><a href="/home">Search</a></a>
-    <li><a href="/home">FAQ/Info</a></a>
-</ul>
+<h1>{{ listname }}</h1>
+
+{% extends "layout.html" %}
+{% block content %}
+<h2><a href="/user/{{ session.username }}/mylists/{{ listname }}/study">study</a></h2>
 <br>
 <p>Add card</p>
-<form action="/user/{{ session.username }}/mylists/{{ name }}" method="POST">
+<form action="/user/{{ session.username }}/mylists/{{ listname }}" method="POST">
     <p>Word:<br>
     <input type="text" name="word"></p>
     <p>Translation:</p>
@@ -20,10 +13,10 @@
     <input type="submit" value="Add">
 </form>
 <p>
-    <h3>Cards: </h3>
+<h3>Cards: </h3>
 {% for card in cards %}
 <ul>
-    <form action="/user/{{ session.username }}/mylists/{{ name }}/deletecard" method="POST">
+    <form action="/user/{{ session.username }}/mylists/{{ listname }}/deletecard" method="POST">
         <li>{{ card[0] }} {{ card[1] }} {{ card[2] }}
         <input type=hidden value="{{ card[0] }}" name="word">
         <input type=hidden value="{{ card[1] }}" name="translation">
@@ -33,18 +26,16 @@
     </form>
 
     <div>
-        <form action="/user/{{ session.username }}/mylists/{{ name }}/editcard" method="POST">
+        <form action="/user/{{ session.username }}/mylists/{{ listname }}/editcard" method="POST">
             <input type=hidden value="{{ card[0] }}" name="word">
             <input type=hidden value="{{ card[1] }}" name="translation">
-            <input type="hidden" name="listname" value="{{ name }}">
+            <input type=hidden name="listname" value="{{ name }}">
             <input type="text" name="newWord" value="{{ card[0] }}" required>
             <input type="text" name="newTranslation" value="{{ card[1] }}" required>
-            <input type="submit" value="Rename">
+            <input type="submit" value="Edit">
         </form>
     </div>
 <p>
 </ul>
 {% endfor %}
-{% else %}
-<a href="/">Login</a>
-{% endif %}
+{% endblock %}

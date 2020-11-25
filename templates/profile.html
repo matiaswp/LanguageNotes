@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if username == "User does not exist" %}
+<h1>Oops! User does not exist :(</h1>
+{% else %}
+<h1>{{ username }}'s profile</h1>
+<h2>Lists</h2>
+{% for list in lists %}
+<a href="/user/{{ session.username }}/mylists/{{ list[0] }}">{{ list[0] }}</br>
+{% endfor %}
+{% endif %}
+{% endblock %}
