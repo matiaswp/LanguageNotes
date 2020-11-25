@@ -11,25 +11,25 @@ def users(SQLAlchemy):
     return content
 
 #Checks if the username and password are valid
-def checkCreditals(SQLAlchemy, username, password):
+def check_credentials(SQLAlchemy, username, password):
 
     #Returns false if username doesn't exist
-    if checkIfUsernameExists(SQLAlchemy, username) == False:
+    if check_if_username_exists(SQLAlchemy, username) == False:
         return False
     #Checks if the password is correct for given account
     else:
-        if checkIfPasswordCorrect(SQLAlchemy, username, password) == True:
+        if check_if_password_correct(SQLAlchemy, username, password) == True:
             return True
         else: 
             return False
 
 #Creates you a cool account
-def createAccount(SQLAlchemy, username, password):
+def create_account(SQLAlchemy, username, password):
 
     #TODO minimum and maximum lenght for username and password
 
     #If username doesn't exist, create user and return true
-    if checkIfUsernameExists(SQLAlchemy, username) == False:
+    if check_if_username_exists(SQLAlchemy, username) == False:
         hash_value = generate_password_hash(password)
         sql = "INSERT INTO userinfo (username,password) VALUES (:username,:password)"
         SQLAlchemy.session.execute(sql, {"username":username,"password":hash_value})
@@ -40,7 +40,7 @@ def createAccount(SQLAlchemy, username, password):
         return False
 
 #Checks if the given username exists in the database
-def checkIfUsernameExists(SQLAlchemy, username): 
+def check_if_username_exists(SQLAlchemy, username): 
 
     #Tries to find given username from database
     sql = "SELECT username FROM userinfo WHERE username=:username"
@@ -54,7 +54,7 @@ def checkIfUsernameExists(SQLAlchemy, username):
         return True
 
 #Checks if given password is correct
-def checkIfPasswordCorrect(SQLAlchemy, username, password):
+def check_if_password_correct(SQLAlchemy, username, password):
     typedPassword = generate_password_hash(password)
     
     #Fetches the password for the given account

@@ -24,7 +24,7 @@ def login():
     password = request.form["password"]
 
     #This is where we check if the username and password you entered are valid
-    if database.checkCreditals(db, username, password) == True:
+    if database.check_credentials(db, username, password) == True:
         session["username"] = username
         return redirect("/home")
     #TODO if password or username wrong show a message
@@ -34,14 +34,12 @@ def login():
 #Logs you out
 @app.route("/logout")
 def logout():
-    username = ""
     del session["username"]
     return redirect("/")
 
 #Shows home page
 @app.route("/home")
 def home():
-
     return render_template("home.html")
 
 #Shows register page
@@ -54,10 +52,10 @@ def register_page():
 def register():
     username = request.form["username"]
     password = request.form["password"]
-    retypedPassword = request.form["retypedPassword"]
+    retyped_password = request.form["retypedPassword"]
 
-    if password == retypedPassword:
-        if database.createAccount(db, username, password) == False:
+    if password == retyped_password:
+        if database.create_account(db, username, password) == False:
             return redirect("/register")
         else:
             return redirect("/")
@@ -66,41 +64,45 @@ def register():
     else:
         return redirect("/register")
 
-#Shows lists and creates new lists
+#Shows session ownwer's lists. IF username does not match to session username
+#Then redirect to session username's lists page.
 @app.route("/user/<username>/mylists", methods=["GET", "POST"])    
-def lists(username):
-    access = "false"
+def mylists(username):
+    #Check if POST or GET request
     if request.method == "POST":
+    
         if session["username"] != username:
-            return redirect("/user/" + username + "/mylists")
+            return redirect("/user/" + session["username"] + "/mylists")
+
         username = session["username"]
         name = request.form["listname"]
+
+        #If name empty, redirect same page. TODO add error message.
         if name.strip() == "":
-            return redirect("/user/" + username + "/mylists")
-    
+            return redirect("/user/" + session["username"] + "/mylists")
+
         userlists.create_new_list(db, username, name)
         return redirect("/user/" + username + "/mylists")
-    else:       
+    else:
         if session["username"] == username:
-            user_list = userlists.listLists(db,username)
-            return render_template("mylists.html", lists=user_list, access=access)
+            user_list = userlists.list_lists(db,username)
+            return render_template("mylists.html", lists=user_list)
         else:
-            return redirect("/user/" + session["usernane"] + "/mylists")
+            return redirect("/user/" + session["username"] + "/mylists")
         
 #Shows cards in list
 @app.route("/user/<username>/mylists/<listname>")
 def show_list(username, listname):
     username = session["username"]
-    cards = userlist.showCards(db, username, listname)
+    cards = userlist.show_cards(db, username, listname)
     return render_template("mylist.html", listname=listname, cards=cards)
 
 #Create new card in list
 @app.route("/user/<username>/mylists/<listname>", methods=["POST"])
 def new_card_to_list(username, listname):
     word = request.form["word"]
-    
     translation = request.form["translation"]
-    userlist.addCardToList(db,username, listname, word, translation)
+    userlist.add_card_to_list(db,username, listname, word, translation)
     return redirect("/user/" + username + "/mylists/" + listname)
 
 #Deletes a list
@@ -109,7 +111,7 @@ def delete_list(username, listname):
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists")
     username = session["username"]
-    userlists.deleteList(db, username, listname)
+    userlists.delete_list(db, username, listname)
     return redirect("/user/" + username + "/mylists")
 
 #Edits a list
@@ -119,9 +121,8 @@ def edit_list(username, listname):
         return redirect("/user/" + username + "/mylists")
     username = session["username"]
     listname = request.form["listname"]
-    newName = request.form["newName"]
-    print(newName)
-    userlists.editList(db, username, listname, newName)
+    new_name = request.form["newName"]
+    userlists.edit_list(db, username, listname, new_name)
     return redirect("/user/" + username + "/mylists")
 
 #Delete a card in list
@@ -144,7 +145,7 @@ def edit_card(username, listname):
     translation = request.form["translation"]
     new_word = request.form["newWord"]
     new_translation = request.form["newTranslation"]
-    userlist.editCard(db, listname, username, word, translation, new_word, new_translation)
+    userlist.edit_card(db, listname, username, word, translation, new_word, new_translation)
     return redirect("/user/" + username + "/mylists/" + listname)
 
 #Shows flashcard mode
@@ -162,7 +163,7 @@ def flashcard(username, listname):
         return True
     else:
         username = session["username"]
-        cards = userlist.showCards(db, username, listname)
+        cards = userlist.show_cards(db, username, listname)
         length = len(cards)
         return render_template("flashcard.html", cards=cards, length=length, 
         listname=listname)
@@ -170,7 +171,7 @@ def flashcard(username, listname):
 #Shows user's profile page. You can also clone other users' lists to you own collection here
 @app.route("/user/<username>/profile")
 def profile(username):
-    user_list = userlists.listLists(db,username)
+    user_list = userlists.list_lists(db,username)
     if user_list == False:
         return render_template("profile.html", username="User does not exist", lists="")
     return render_template("profile.html", lists=user_list, username=username)

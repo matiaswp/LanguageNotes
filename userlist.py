@@ -5,11 +5,11 @@ from os import getenv
 from werkzeug.security import check_password_hash, generate_password_hash
 
 #Adds card to a given list
-def addCardToList(SQLAlchemy, username, name, word, translation):
+def add_card_to_list(SQLAlchemy, username, name, word, translation):
 
-    sql = "SELECT id FROM userinfo WHERE username=:username"
-    getId = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = getId.fetchone()[0]
+    get_id_sql = "SELECT id FROM userinfo WHERE username=:username"
+    get_id = SQLAlchemy.session.execute(get_id_sql, {"username":username})
+    user_id = get_id.fetchone()[0]
 
     get_list_sql = "SELECT l.id FROM lists l, userinfo u WHERE l.user_id=u.id AND name=:name AND"\
         " u.username=:username"
@@ -24,12 +24,12 @@ def addCardToList(SQLAlchemy, username, name, word, translation):
 #Removes a card from list
 def remove_card_from_list(SQLAlchemy, username, listname, word, translation):
     sql = "SELECT id FROM userinfo WHERE username=:username"
-    getId = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = getId.fetchone()[0]
+    get_id = SQLAlchemy.session.execute(sql, {"username":username})
+    user_id = get_id.fetchone()[0]
 
     sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    getList = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
-    list_id = getList.fetchone()[0]
+    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
+    list_id = get_list.fetchone()[0]
 
     sql3 = "DELETE FROM cards WHERE word=:word AND list_id=:list_id "\
          "AND translation=:translation"
@@ -38,14 +38,14 @@ def remove_card_from_list(SQLAlchemy, username, listname, word, translation):
     SQLAlchemy.session.commit()
 
 #Edit card
-def editCard(SQLAlchemy, listname, username, word, translation, newWord, newTranslation):
+def edit_card(SQLAlchemy, listname, username, word, translation, newWord, newTranslation):
     sql = "SELECT id FROM userinfo WHERE username=:username"
-    getId = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = getId.fetchone()[0]
+    get_id = SQLAlchemy.session.execute(sql, {"username":username})
+    user_id = get_id.fetchone()[0]
 
     sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    getList = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
-    list_id = getList.fetchone()[0]
+    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
+    list_id = get_list.fetchone()[0]
 
     sql3 = "UPDATE cards SET word='"+newWord+"', translation='"+newTranslation+\
         "' WHERE list_id='" + str(list_id) + "' AND word='"+word+"' AND translation='"\
@@ -53,32 +53,32 @@ def editCard(SQLAlchemy, listname, username, word, translation, newWord, newTran
     SQLAlchemy.session.execute(sql3)
     SQLAlchemy.session.commit()
 
-
 #Returns all cards from given list
-def showCards(SQLAlchemy, username, name):
+def show_cards(SQLAlchemy, username, name):
 
     sql = "SELECT id FROM userinfo WHERE username=:username"
-    getId = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = getId.fetchone()[0]
+    get_id = SQLAlchemy.session.execute(sql, {"username":username})
+    user_id = get_id.fetchone()[0]
 
     sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    getList = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":name})
-    list_id = getList.fetchone()[0]
+    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":name})
+    list_id = get_list.fetchone()[0]
 
     sql3 = "SELECT word, translation, date FROM cards WHERE list_id=:list_id ORDER BY date"
-    getCards = SQLAlchemy.session.execute(sql3, {"list_id":list_id})
-    cards = getCards.fetchall()
+    get_cards = SQLAlchemy.session.execute(sql3, {"list_id":list_id})
+    cards = get_cards.fetchall()
 
     return cards
 
+#Adds more date to a card. Used by SRS system.
 def add_more_date(SQLAlchemy, username, listname, word, translation, answer):
     sql = "SELECT id FROM userinfo WHERE username=:username"
-    getId = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = getId.fetchone()[0]
+    get_id = SQLAlchemy.session.execute(sql, {"username":username})
+    user_id = get_id.fetchone()[0]
 
     sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    getList = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
-    list_id = getList.fetchone()[0]
+    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
+    list_id = get_list.fetchone()[0]
 
     sql3 = "SELECT id, difficulty FROM cards WHERE word=:word AND "\
             "translation=:translation AND list_id=:listid"

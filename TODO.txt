@@ -1,7 +1,7 @@
 This is a todo list. It propably does not contain everything I need to do,
 but some important things
 
-- Code refactoring (for ex. remove repeating code)
+- Code refactoring (for ex. remove repeating code, variable names)
 - Rest of functionality and pages
 - Add "login failed" when wrong password or username
 - Add "registeration failed" when passwords dont match or username is taken
@@ -18,3 +18,5 @@ but some important things
 - CSRF protection
 - View other users' lists' content
 - Make this app good looking (:
+- Finish flashcard.html (Cards left, finish when all cards done etc...)
+- Can' edit list's name to already existing name
