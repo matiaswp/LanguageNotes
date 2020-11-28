@@ -21,7 +21,7 @@ CREATE TABLE cards (
 
 CREATE TABLE follow (
     id INTEGER PRIMARY KEY,
-    follower_userid INTEGER REFERENCES userinfo,
+    user_id INTEGER REFERENCES userinfo,
     following_userid INTEGER REFERENCES userinfo
 )
 

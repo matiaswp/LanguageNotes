@@ -168,13 +168,33 @@ def flashcard(username, listname):
         return render_template("flashcard.html", cards=cards, length=length, 
         listname=listname)
 
-#Shows user's profile page. You can also clone other users' lists to you own collection here
-@app.route("/user/<username>/profile")
+#Shows user's profile page. You can follow and unfollow a user here
+@app.route("/user/<username>/profile", methods=["GET", "POST"])
 def profile(username):
-    user_list = userlists.list_lists(db,username)
-    if user_list == False:
-        return render_template("profile.html", username="User does not exist", lists="")
-    return render_template("profile.html", lists=user_list, username=username)
+
+    follow_status = database.check_if_following(db, session["username"], username)
+
+    if request.method == "POST":
+        if follow_status:
+            database.unfollow(db, session["username"], username)
+            return redirect("/user/" + username + "/profile")
+        else:
+            database.follow(db, session["username"], username)
+            return redirect("/user/" + username + "/profile")
+    else:
+        message = ""
+        if session["username"] == username:
+            message = "Yes, you can follow yourself so your follow list is never empty :)"
+        if follow_status:
+            follow = "Unfollow"
+        else:
+            follow = "Follow"
+        user_list = userlists.list_lists(db,username)
+        if user_list == False:
+            return render_template("profile.html", username="User does not exist", 
+            lists="", follow=follow)
+        return render_template("profile.html", lists=user_list, username=username, follow=follow,
+        message=message)
 
 #Edit your profile
 @app.route("/user/<username>/profile/edit")
@@ -187,9 +207,12 @@ def user_list(username, listname):
     return render_template(".html")
 
 #Shows who you are following
-app.route("/user/<username>/following")
+@app.route("/user/<username>/following")
 def following(username):
-    return render_template("following.html")
+    if username != session["username"]:
+        redirect("/user/" + session[username] + "/following")
+    names = database.show_following(db, session["username"])
+    return render_template("following.html", names=names)
 
 #Shows info/about page
 @app.route("/info")

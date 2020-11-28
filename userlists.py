@@ -25,8 +25,8 @@ def list_lists(SQLAlchemy, username):
 def create_new_list(SQLAlchemy, username, listname):
 
     sql = "SELECT id FROM userinfo WHERE username=:username"
-    getId = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = getId.fetchone()[0]
+    get_id = SQLAlchemy.session.execute(sql, {"username":username})
+    user_id = get_id.fetchone()[0]
 
     ql = "SELECT id FROM lists WHERE user_id=:user_id AND name=:listname"
     get_lists = SQLAlchemy.session.execute(ql, {"user_id":user_id, "listname":listname})

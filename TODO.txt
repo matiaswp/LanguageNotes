@@ -1,7 +1,7 @@
 This is a todo list. It propably does not contain everything I need to do,
 but some important things
 
-- Code refactoring (for ex. remove repeating code, variable names)
+- Code refactoring (for ex. remove repeating code, variable names, module names)
 - Rest of functionality and pages
 - Add "login failed" when wrong password or username
 - Add "registeration failed" when passwords dont match or username is taken
