@@ -1,7 +1,7 @@
 README.md
 LanguageNotes. The place for your own vocabulary and grammar notes.
 
-Features / App status: 
+Features
 + You can create an account. 
 + You can can make lists for your own vocabulary and grammar cards.
 + You can also edit or delete lists or cards.
@@ -11,13 +11,14 @@ Features / App status:
 + You can follow other users.
 + You can show your hobbies and languages that you are learning in your profile.
 
-App status
-At the moment you can:
+App status. You can;
 + Create an account and login.
 + Create, edit and delete lists.
 + Create, edit and delete cards inside lists.
 + Search and view other users' profile page.
 + Enter study mode.
++ Follow other users
+
 You can view some TODO-stuff in TODO.txt file. Might not include everything.
 
 How to test the app?
@@ -26,3 +27,7 @@ How to test the app?
 + Home-, mylists- and profilepages have content. 
 + Go check those out and try to create, delete and edit lists and cards.
 + You can enter a list by clicking the name of the list and enter study mode by clicking "Study" inside a list. 
++ To see someone's profile page, type it in the search box. You can try it by searching "account" or "testAccount1".
++ To follow a user, go to their profile page and hit follow.
+
+Note. When viewing other user's profile page, the links to view the contents of their lists are not working and it will forward you incorrectly.
