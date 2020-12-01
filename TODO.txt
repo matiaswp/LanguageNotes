@@ -1,22 +1,40 @@
 This is a todo list. It propably does not contain everything I need to do,
 but some important things
 
+TODO:
 - Code refactoring (for ex. remove repeating code, variable names, module names)
 - Rest of functionality and pages
-- Add "login failed" when wrong password or username
-- Add "registeration failed" when passwords dont match or username is taken
-- Can't create account with empty credentials
 - Navigation system
 - Combine GET and POST to same function
 - Improve SQL queries
 - Chenge function and variable names so that they use underscores
-- Overall error messages for users (for.ex. empty listname, duplicate listname etc...)
+- Overall messages for users
+    -- Mylists
+        --- List creation -> Invalid name / already in use
+        --- List renaming -> Cant rename to already existing list
+        --- List creation/edit/delete successful
+    -- Inside lists
+        --- Card creation/edit/delete succesful
+        --- Error messages for invalid fields or if something goes wrong in forms
+    --
 - Popup window for editing lists and cards
 - Validation of forms
+    -- Search
+        --- Search with only spaces
+    -- Mylists
+        --- Renaming with spaces
+        --- Creating a list with spaces
+    -- Inside a list
+        --- Renaming / Creation with empty or spaces
 - Fix: Deletes all same value cards
 - Spaced repetition system for cards
 - CSRF protection
-- View other users' lists' content
 - Make this app good looking (:
 - Finish flashcard.html (Cards left, finish when all cards done etc...)
-- Can' edit list's name to already existing name
+- EDIT PROFILE
+
+FINISHED?
+- View other users' lists' content(DONE?)
+- Add "registeration failed" when passwords dont match or username is taken (DONE?)
+- Add "login failed" when wrong password or username (DONE?)
+- Can't create account with empty credentials (DONE?)
