@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>{{ listname }}</h1>
+<form action="/user/{{ username }}/profile/{{ listname }}" method="POST">
+    <input type="submit" value="Copy list">
+</form>
+<h3>Cards</h3>
+{% for card in cards %}
+<p>{{ card[0] }} {{ card[1] }}</p>
+{% endfor %}
+{% endblock %}

@@ -4,10 +4,15 @@ but some important things
 TODO:
 - Code refactoring (for ex. remove repeating code, variable names, module names)
 - Rest of functionality and pages
+    -- EDIT PROFILE
+        --- Edit username
+        --- Edit "your languages"
+    -- SRS
+    -- Info/About page
+    -- List copying
 - Navigation system
 - Combine GET and POST to same function
 - Improve SQL queries
-- Chenge function and variable names so that they use underscores
 - Overall messages for users
     -- Mylists
         --- List creation -> Invalid name / already in use
@@ -19,22 +24,26 @@ TODO:
     --
 - Popup window for editing lists and cards
 - Validation of forms
-    -- Search
-        --- Search with only spaces
     -- Mylists
         --- Renaming with spaces
         --- Creating a list with spaces
     -- Inside a list
         --- Renaming / Creation with empty or spaces
 - Fix: Deletes all same value cards
-- Spaced repetition system for cards
 - CSRF protection
 - Make this app good looking (:
 - Finish flashcard.html (Cards left, finish when all cards done etc...)
-- EDIT PROFILE
+- Error if trying to view for.ex. /user/account/profile while not logged in.
+    -- Redirect to login screen if not logged in.
+- Login automatically after successful registeration.
 
 FINISHED?
 - View other users' lists' content(DONE?)
 - Add "registeration failed" when passwords dont match or username is taken (DONE?)
 - Add "login failed" when wrong password or username (DONE?)
 - Can't create account with empty credentials (DONE?)
+-- Search
+        --- Search with only spaces (PARTLY DONE? Throws error on empty or 
+        space only input)
+- Chenge function and variable names so that they use underscores (MOSTLY DONE
+    WILL FINISH REST WHILE REFACTORING)

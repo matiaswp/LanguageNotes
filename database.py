@@ -14,14 +14,11 @@ def users(SQLAlchemy):
 def check_credentials(SQLAlchemy, username, password):
 
     #Returns false if username doesn't exist
-    if check_if_username_exists(SQLAlchemy, username) == False:
+    if check_if_username_exists(SQLAlchemy, username):
         return False
     #Checks if the password is correct for given account
     else:
-        if check_if_password_correct(SQLAlchemy, username, password) == True:
-            return True
-        else: 
-            return False
+        return check_if_password_correct(SQLAlchemy, username, password)
 
 #Creates you a cool account
 def create_account(SQLAlchemy, username, password):
@@ -29,7 +26,7 @@ def create_account(SQLAlchemy, username, password):
     #TODO minimum and maximum lenght for username and password
 
     #If username doesn't exist, create user and return true
-    if check_if_username_exists(SQLAlchemy, username) == False:
+    if check_if_username_exists(SQLAlchemy, username):
         hash_value = generate_password_hash(password)
         sql = "INSERT INTO userinfo (username,password) VALUES (:username,:password)"
         SQLAlchemy.session.execute(sql, {"username":username,"password":hash_value})
@@ -49,9 +46,9 @@ def check_if_username_exists(SQLAlchemy, username):
 
     #Returs false if username doesn't exist and otherwise true
     if user == None:
-        return False
-    else:
         return True
+    else:
+        return False
 
 #Checks if given password is correct
 def check_if_password_correct(SQLAlchemy, username, password):

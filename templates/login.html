@@ -1,9 +1,11 @@
 {% if session.username %}
 <h1>Hello</h1>
 <p>Logged in as {{ session.username }}</p>
+<a href="/home">home</br>
 <a href="/logout">Logout</a>
 {% else %}
 <h1>Login</h1>
+<h2>{{ message }}</h2>
 <form action="/login" method="POST">
 <p>Username:<br>
 <input type="text" name="username"></p>

@@ -22,14 +22,14 @@ def index():
 def login():
     username = request.form["username"]
     password = request.form["password"]
-
-    #This is where we check if the username and password you entered are valid
+    
     if database.check_credentials(db, username, password) == True:
         session["username"] = username
         return redirect("/home")
     #TODO if password or username wrong show a message
     else:
-        return redirect("/")
+        message = "Username or password incorrect"
+        return render_template("login.html", message=message)
     
 #Logs you out
 @app.route("/logout")
@@ -37,35 +37,49 @@ def logout():
     del session["username"]
     return redirect("/")
 
-#Shows home page
+"""Shows home page"""
 @app.route("/home")
 def home():
     return render_template("home.html")
 
-#Shows register page
-@app.route("/register")
+"""Shows register page"""
+@app.route("/register", methods=["GET", "POST"])
 def register_page():
-    return render_template("register.html")
+    message = ""
+    if request.method == "POST":
+        
+        username = request.form["username"]
+        password = request.form["password"]
+        retyped_password = request.form["retypedPassword"]
+        stripusername = username.strip()
+        strippw = password.strip()
+        
+        if stripusername == "" or strippw == "":
+            message = "Can't create account with empty credentials"
+            return render_template("register.html", message=message)
 
-#For creating a new account
-@app.route("/register", methods=["POST"])
-def register():
-    username = request.form["username"]
-    password = request.form["password"]
-    retyped_password = request.form["retypedPassword"]
+        if len(username) > 16 or len(username) < 3:
+            message = "Username too short or too long"
+            return render_template("register.html", message=message)
 
-    if password == retyped_password:
-        if database.create_account(db, username, password) == False:
-            return redirect("/register")
+        if len(password) > 16 or len(password) < 6:
+            message = "Password is too short or too long"
+            return render_template("register.html", message=message)
+
+        if password == retyped_password:
+            if database.create_account(db, username, password) == False:
+                message = "Username taken"
+                return render_template("register.html", message=message)
+            else:
+                return redirect("/")
         else:
-            return redirect("/")
-    #if passwords doesnt match, reloads the page 
-    #TODO show message that passwords don't match
+            message = "Passwords didn't match"
+            return render_template("register.html", message=message)
     else:
-        return redirect("/register")
+        return render_template("register.html", message=message)
 
-#Shows session ownwer's lists. IF username does not match to session username
-#Then redirect to session username's lists page.
+"""Shows session ownwer's lists. IF username does not match to session username
+Then redirect to session username's lists page."""
 @app.route("/user/<username>/mylists", methods=["GET", "POST"])    
 def mylists(username):
     #Check if POST or GET request
@@ -90,14 +104,14 @@ def mylists(username):
         else:
             return redirect("/user/" + session["username"] + "/mylists")
         
-#Shows cards in list
+"""Shows cards in list"""
 @app.route("/user/<username>/mylists/<listname>")
 def show_list(username, listname):
     username = session["username"]
     cards = userlist.show_cards(db, username, listname)
     return render_template("mylist.html", listname=listname, cards=cards)
 
-#Create new card in list
+"""Create new card in list"""
 @app.route("/user/<username>/mylists/<listname>", methods=["POST"])
 def new_card_to_list(username, listname):
     word = request.form["word"]
@@ -105,7 +119,7 @@ def new_card_to_list(username, listname):
     userlist.add_card_to_list(db,username, listname, word, translation)
     return redirect("/user/" + username + "/mylists/" + listname)
 
-#Deletes a list
+"""Deletes a list"""
 @app.route("/user/<username>/mylists/<listname>/delete", methods=["POST"])
 def delete_list(username, listname):
     if session["username"] != username:
@@ -196,6 +210,17 @@ def profile(username):
         return render_template("profile.html", lists=user_list, username=username, follow=follow,
         message=message)
 
+@app.route("/user/<username>/profile/<listname>", methods=["GET", "POST"])
+def usercardlist(username, listname):
+
+    if request.method == "POST":
+        userlists.copy_list(db, session["username"], listname, username)
+        return redirect("/user/" + username + "/profile/" + listname)
+    else:
+        cards = userlist.show_cards(db, username, listname)
+        return render_template("userlist.html", username=username, listname=listname,
+        cards=cards)
+
 #Edit your profile
 @app.route("/user/<username>/profile/edit")
 def edit_profile(username):
@@ -223,4 +248,8 @@ def info_about():
 @app.route("/search", methods=["POST"])
 def search():
     username = request.form["search"]
+    if username.strip() == "":
+        error = "Can't search without proper input :("
+        return render_template("layout.html", error=error)
+    error = ""
     return redirect("/user/" + username + "/profile")

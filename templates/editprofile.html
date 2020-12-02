@@ -1,3 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
+<h1>Edit profile</h1>
+<h2>Edit username</h2>
+<h2>{{ error }}</h2>
+<form action="" method="POST">
+    <input type="text" name="editName" placeholder="Enter new username" required><p>
+    <input type="submit" value="Change">
+</form>
+<h2>Edit languages</h2>
+<form action="" method="POST">
+    <input type="text" name="lang1" value="{{}}" required></p>
+    <input type="text" name="lang1" value="{{}}" required></p>
+    <input type="text" name="lang1" value="{{}}" required></p>
+    <input type="submit" value="Change">
+</form>
+
 {% endblock %}
