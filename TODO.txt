@@ -2,40 +2,41 @@ This is a todo list. It propably does not contain everything I need to do,
 but some important things
 
 TODO:
+IMPORTANT
 - Code refactoring (for ex. remove repeating code, variable names, module names)
 - Rest of functionality and pages
     -- EDIT PROFILE
-        --- Edit username
         --- Edit "your languages"
     -- SRS
     -- Info/About page
     -- List copying
 - Navigation system
-- Combine GET and POST to same function
-- Improve SQL queries
-- Overall messages for users
+- Link to edit profile
+- Overall messages for users (Errors need improvement tho)
     -- Mylists
         --- List creation -> Invalid name / already in use
         --- List renaming -> Cant rename to already existing list
         --- List creation/edit/delete successful
     -- Inside lists
         --- Card creation/edit/delete succesful
-        --- Error messages for invalid fields or if something goes wrong in forms
-    --
-- Popup window for editing lists and cards
+    -- Editprofile
+        --- Changes succesful
 - Validation of forms
-    -- Mylists
-        --- Renaming with spaces
-        --- Creating a list with spaces
-    -- Inside a list
-        --- Renaming / Creation with empty or spaces
-- Fix: Deletes all same value cards
+    -- min and max lengths (renameing and creation of cards and lists)
 - CSRF protection
 - Make this app good looking (:
 - Finish flashcard.html (Cards left, finish when all cards done etc...)
 - Error if trying to view for.ex. /user/account/profile while not logged in.
     -- Redirect to login screen if not logged in.
+- acessing ur own list through profile? 
+- Strip values gotten from forms before adding them to database
+- Fix: Trying to search /user/testAccount1/following as account results in error
+
+IMPORTANT BUT CAN LIVE WITH THEM EXISTING
 - Login automatically after successful registeration.
+- Fix: Deletes all same value cards
+- Improve SQL queries
+- Popup window for editing lists and cards
 
 FINISHED?
 - View other users' lists' content(DONE?)
@@ -47,3 +48,4 @@ FINISHED?
         space only input)
 - Chenge function and variable names so that they use underscores (MOSTLY DONE
     WILL FINISH REST WHILE REFACTORING)
+- Combine GET and POST to same function

@@ -60,18 +60,25 @@ def delete_list(SQLAlchemy, username, listname):
 
 #Edit lists name
 def edit_list(SQLAlchemy, username, listname, new_name):
+
     sql = "SELECT id FROM userinfo WHERE username=:username"
     get_id = SQLAlchemy.session.execute(sql, {"username":username})
     user_id = get_id.fetchone()[0]
 
-    sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
-    list_id = get_list.fetchone()[0]
-
+    sql2 = "SELECT name FROM lists WHERE user_id=:user_id AND name=:name"
+    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":new_name})
+    try:
+        get_name = get_list.fetchone()[0]
+        if get_name == new_name:
+            return False
+    except:
+        i=0
+    
     sql3 = "UPDATE lists SET name='"+new_name+"' WHERE user_id="+str(user_id)+\
         " AND name='"+listname+"'"
     SQLAlchemy.session.execute(sql3)
     SQLAlchemy.session.commit()
+    return True
 
 #Copies a list to your own collection
 def copy_list(SQLAlchemy, username, listname, list_owner):
@@ -112,7 +119,8 @@ def copy_list(SQLAlchemy, username, listname, list_owner):
     for i in range(len(words)):
         word = words[i]
         translation = translations[i]
-        SQLAlchemy.session.execute(sql3, {"word":word,"translation":translation,"list_id":new_listid})
+        SQLAlchemy.session.execute(sql3, {"word":word,"translation":translation,
+        "list_id":new_listid})
         i = i + 1
     SQLAlchemy.session.commit()
     return True

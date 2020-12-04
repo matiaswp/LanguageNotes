@@ -1,23 +1,23 @@
 from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session, url_for
 from os import getenv
 import database
 import userlists
 import userlist
+import editprofile
 from flask_sqlalchemy import SQLAlchemy
-
 
 app = Flask(__name__)
 app.secret_key = getenv("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 db = SQLAlchemy(app)
 
-#Handles requests to "/" (redirects to login page)
+"""Handles requests to "/" (redirects to login page)"""
 @app.route("/")
 def index():
     return render_template("login.html")
 
-#Logs you in only and only if you somehow remember your password (Handles logins)
+"""Logs you in only and only if you somehow remember your password (Handles logins)"""
 @app.route("/login",methods=["POST"])
 def login():
     username = request.form["username"]
@@ -31,7 +31,7 @@ def login():
         message = "Username or password incorrect"
         return render_template("login.html", message=message)
     
-#Logs you out
+"""Logs you out"""
 @app.route("/logout")
 def logout():
     del session["username"]
@@ -82,7 +82,10 @@ def register_page():
 Then redirect to session username's lists page."""
 @app.route("/user/<username>/mylists", methods=["GET", "POST"])    
 def mylists(username):
-    #Check if POST or GET request
+    try:
+        message = request.args("message")
+    except:
+        message = ""
     if request.method == "POST":
     
         if session["username"] != username:
@@ -100,24 +103,33 @@ def mylists(username):
     else:
         if session["username"] == username:
             user_list = userlists.list_lists(db,username)
-            return render_template("mylists.html", lists=user_list)
+            return render_template("mylists.html", lists=user_list, message=message)
         else:
             return redirect("/user/" + session["username"] + "/mylists")
         
 """Shows cards in list"""
-@app.route("/user/<username>/mylists/<listname>")
+@app.route("/user/<username>/mylists/<listname>", methods=["POST", "GET"])
 def show_list(username, listname):
+
     username = session["username"]
     cards = userlist.show_cards(db, username, listname)
-    return render_template("mylist.html", listname=listname, cards=cards)
 
-"""Create new card in list"""
-@app.route("/user/<username>/mylists/<listname>", methods=["POST"])
-def new_card_to_list(username, listname):
-    word = request.form["word"]
-    translation = request.form["translation"]
-    userlist.add_card_to_list(db,username, listname, word, translation)
-    return redirect("/user/" + username + "/mylists/" + listname)
+    if request.method == "POST":
+        word = request.form["word"]
+        translation = request.form["translation"]
+
+        if word.strip() == "" or translation.strip() == "":
+            message = "Can't create a card with empty values"
+            return render_template("mylist.html", listname=listname, cards=cards, 
+            message=message)
+        message = ""
+        userlist.add_card_to_list(db,username, listname, word, translation)
+        return redirect("/user/" + username + "/mylists/" + listname)
+    else:
+        username = session["username"]
+        cards = userlist.show_cards(db, username, listname)
+        message = ""
+        return render_template("mylist.html", listname=listname, cards=cards, message=message)
 
 """Deletes a list"""
 @app.route("/user/<username>/mylists/<listname>/delete", methods=["POST"])
@@ -128,7 +140,7 @@ def delete_list(username, listname):
     userlists.delete_list(db, username, listname)
     return redirect("/user/" + username + "/mylists")
 
-#Edits a list
+"""Edits a list"""
 @app.route("/user/<username>/mylists/<listname>/edit", methods=["POST"])
 def edit_list(username, listname):
     if session["username"] != username:
@@ -136,33 +148,45 @@ def edit_list(username, listname):
     username = session["username"]
     listname = request.form["listname"]
     new_name = request.form["newName"]
+    if new_name.strip() == "":
+        #TODO
+        message = "Can't rename without proper input :("
+        return redirect(url_for(".mylists", message=message, username=username))
     userlists.edit_list(db, username, listname, new_name)
     return redirect("/user/" + username + "/mylists")
 
-#Delete a card in list
+"""Delete a card in list"""
 @app.route("/user/<username>/mylists/<listname>/deletecard", methods=["POST"])
 def delete_card(username, listname):
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists/" + listname)
+
     username = session["username"]
     word = request.form["word"]
     translation = request.form["translation"]
     userlist.remove_card_from_list(db, username, listname, word, translation)
     return redirect("/user/" + username + "/mylists/" + listname)
 
-#Edit the contents of a card
+"""Edit the contents of a card"""
 @app.route("/user/<username>/mylists/<listname>/editcard", methods=["POST"])
 def edit_card(username, listname):
+
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists/" + listname)
+
     word = request.form["word"]
     translation = request.form["translation"]
     new_word = request.form["newWord"]
     new_translation = request.form["newTranslation"]
+
+    if new_word.strip() == "" or new_translation.strip() == "":
+        return redirect("/user/" + username + "/mylists/" + listname)
+
+
     userlist.edit_card(db, listname, username, word, translation, new_word, new_translation)
     return redirect("/user/" + username + "/mylists/" + listname)
 
-#Shows flashcard mode
+"""Shows flashcard mode"""
 @app.route("/user/<username>/mylists/<listname>/study", methods=["GET", "POST"])
 def flashcard(username, listname):
     if request.method == "POST":
@@ -182,7 +206,7 @@ def flashcard(username, listname):
         return render_template("flashcard.html", cards=cards, length=length, 
         listname=listname)
 
-#Shows user's profile page. You can follow and unfollow a user here
+"""Shows user's profile page. You can follow and unfollow a user here"""
 @app.route("/user/<username>/profile", methods=["GET", "POST"])
 def profile(username):
 
@@ -210,6 +234,7 @@ def profile(username):
         return render_template("profile.html", lists=user_list, username=username, follow=follow,
         message=message)
 
+"""Shows list content of a user. Copy functionality"""
 @app.route("/user/<username>/profile/<listname>", methods=["GET", "POST"])
 def usercardlist(username, listname):
 
@@ -221,17 +246,29 @@ def usercardlist(username, listname):
         return render_template("userlist.html", username=username, listname=listname,
         cards=cards)
 
-#Edit your profile
-@app.route("/user/<username>/profile/edit")
+"""Edit profile page and name change"""
+@app.route("/user/<username>/profile/edit", methods=["GET", "POST"])
 def edit_profile(username):
-    return render_template("editprofile.html")
 
-#Shows a list of a given user
-@app.route("/user/<username>/lists/<listname>")
-def user_list(username, listname):
-    return render_template(".html")
+    if request.method == "POST":
+        new_name = request.form("editName")
+        if new_name.strip() == "":
+            return render_template("editprofile.html", message="Invalid input")
+        if len(username) > 16 or len(username) < 3:
+            message = "Username too short or too long"
+            return render_template("editprofile.html", message=message)
+        editprofile.edit_name(db, username, new_name)
+        return redirect("/user/" + username + "/profile/edit")
+    else:
+        return render_template("editprofile.html", message="")
 
-#Shows who you are following
+"""Edit your languages"""
+@app.route("/user/<username>/profile/edit/lang", methods=["POST"])
+def edit_language(username):
+    editprofile.edit_language(db)
+    return redirect("/user/" + username + "/profile/edit")
+
+"""Shows who you are following"""
 @app.route("/user/<username>/following")
 def following(username):
     if username != session["username"]:
@@ -239,12 +276,12 @@ def following(username):
     names = database.show_following(db, session["username"])
     return render_template("following.html", names=names)
 
-#Shows info/about page
+"""Shows info/about page"""
 @app.route("/info")
 def info_about():
     return render_template("infoabout.html")
 
-#Used to search people
+"""Used to search people"""
 @app.route("/search", methods=["POST"])
 def search():
     username = request.form["search"]

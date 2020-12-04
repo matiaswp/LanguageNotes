@@ -3,16 +3,19 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2><a href="/user/{{ session.username }}/mylists/{{ listname }}/study">study</a></h2>
+<h3>Note: Study mode requires javascript to be enabled</h3>
 <br>
+
 <p>Add card</p>
 <form action="/user/{{ session.username }}/mylists/{{ listname }}" method="POST">
     <p>Word:<br>
-    <input type="text" name="word"></p>
+    <input type="text" name="word" required></p>
     <p>Translation:</p>
-    <input type="text" name="translation"></p>
+    <input type="text" name="translation" required></p>
     <input type="submit" value="Add">
 </form>
 <p>
+<h3>{{ message }}</h3>
 <h3>Cards: </h3>
 {% for card in cards %}
 <ul>

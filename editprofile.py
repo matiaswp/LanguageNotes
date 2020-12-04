@@ -2,15 +2,13 @@ from flask import Flask
 from flask import redirect, render_template, request, session
 import app
 from flask_sqlalchemy import SQLAlchemy
+import database
 
-def edit_name():
-    i=0
-    
-def add_language():
+def add_language(SQLAlchemy, username, language):
     i=0
 
-def edit_language():
+def edit_language(SQLAlchemy, username, language):
     i=0
 
-def delete_language():
+def delete_language(SQLAlchemy, username, language):
     i=0

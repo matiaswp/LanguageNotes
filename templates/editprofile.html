@@ -1,17 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
 <h1>Edit profile</h1>
-<h2>Edit username</h2>
-<h2>{{ error }}</h2>
-<form action="" method="POST">
-    <input type="text" name="editName" placeholder="Enter new username" required><p>
-    <input type="submit" value="Change">
-</form>
-<h2>Edit languages</h2>
-<form action="" method="POST">
+<h2>{{ message }}</h2>
+
+<h2>Edit languages you are learning</h2>
+<h3>Can learn up to four languages</br>
+Leaving a field empty gets rid of the language</h3>
+<form action="/user/{{ sesion.username }}/profile/edit/lang" method="POST">
     <input type="text" name="lang1" value="{{}}" required></p>
-    <input type="text" name="lang1" value="{{}}" required></p>
-    <input type="text" name="lang1" value="{{}}" required></p>
+    <input type="text" name="lang2" value="{{}}" required></p>
+    <input type="text" name="lang3" value="{{}}" required></p>
+    <input type="text" name="lang4" value="{{}}" required></p>
     <input type="submit" value="Change">
 </form>
 
