@@ -124,11 +124,7 @@ def copy_list(SQLAlchemy, username, listname, list_owner):
         i = i + 1
     SQLAlchemy.session.commit()
     return True
-
-#For future refactoring
-def get_user_id():
-    i=0
-
+    
 #For future refactoring
 def get_list_id():
     i=0

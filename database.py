@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import render_template
 from os import getenv
 from werkzeug.security import check_password_hash, generate_password_hash
+import editprofile
 
 #Lists all usernames (temporary, for testing pusposes only)
 def users(SQLAlchemy):
@@ -23,16 +24,21 @@ def check_credentials(SQLAlchemy, username, password):
 #Creates you a cool account
 def create_account(SQLAlchemy, username, password):
 
-    #TODO minimum and maximum lenght for username and password
-
-    #If username doesn't exist, create user and return true
     if check_if_username_exists(SQLAlchemy, username):
         hash_value = generate_password_hash(password)
         sql = "INSERT INTO userinfo (username,password) VALUES (:username,:password)"
         SQLAlchemy.session.execute(sql, {"username":username,"password":hash_value})
         SQLAlchemy.session.commit()
+
+        """
+        lang1 = " "
+        lang2 = " "
+        lang3 = " "
+        user_id = get_user_id(SQLAlchemy, username)
+        editprofile.add_language(SQLAlchemy, user_id, lang1, lang2, lang3)
+        """
         return True
-    #Return false if username already exists
+    
     else:
         return False
 
@@ -136,3 +142,9 @@ def show_following(SQLAlchemy, username):
     following = get_follow.fetchall()
 
     return following
+
+def get_user_id(SQLAlchemy, username):
+    sql = "SELECT id FROM userinfo WHERE username=:username"
+    get_id = SQLAlchemy.session.execute(sql, {"username":username})
+    user_id = get_id.fetchone()[0]
+    return user_id

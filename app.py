@@ -230,9 +230,10 @@ def profile(username):
         user_list = userlists.list_lists(db,username)
         if user_list == False:
             return render_template("profile.html", username="User does not exist", 
-            lists="", follow=follow)
+            lists="", follow="")
+        languages = editprofile.get_languages(db, username)
         return render_template("profile.html", lists=user_list, username=username, follow=follow,
-        message=message)
+        message=message, languages=languages)
 
 """Shows list content of a user. Copy functionality"""
 @app.route("/user/<username>/profile/<listname>", methods=["GET", "POST"])
@@ -249,24 +250,37 @@ def usercardlist(username, listname):
 """Edit profile page and name change"""
 @app.route("/user/<username>/profile/edit", methods=["GET", "POST"])
 def edit_profile(username):
-
+    
     if request.method == "POST":
-        new_name = request.form("editName")
-        if new_name.strip() == "":
-            return render_template("editprofile.html", message="Invalid input")
-        if len(username) > 16 or len(username) < 3:
-            message = "Username too short or too long"
-            return render_template("editprofile.html", message=message)
-        editprofile.edit_name(db, username, new_name)
+
+        lang1 = request.form["lang1"]
+        lang = request.form["lang"]
+        if editprofile.check_if_learning(db, username, lang1):
+            return redirect("/user/" + username + "/profile/edit")
+        editprofile.edit_language(db, username, lang1, lang)
         return redirect("/user/" + username + "/profile/edit")
     else:
-        return render_template("editprofile.html", message="")
+        if username != session["username"]:
+            return redirect("/user/" + session["username"] + "/profile/edit")
+        languages = editprofile.get_languages(db, session["username"])
+        return render_template("editprofile.html", message="", languages=languages)
 
-"""Edit your languages"""
-@app.route("/user/<username>/profile/edit/lang", methods=["POST"])
-def edit_language(username):
-    editprofile.edit_language(db)
-    return redirect("/user/" + username + "/profile/edit")
+"""Adds a language to your profile"""
+@app.route("/user/<username>/profile/edit/add", methods=["POST"])
+def edit_add_lang(username):
+
+    if username != session["username"]:
+        return redirect("/user/" + session["username"] + "/profile/edit")
+    languages = editprofile.get_languages(db, session["username"])
+    language = request.form["lang"]
+    if len(languages) >= 3:
+        return redirect("/user/" + session["username"] + "/profile/edit")
+    if editprofile.check_if_learning(db, username, language):
+        return redirect("/user/" + session["username"] + "/profile/edit")
+
+    user_id = database.get_user_id(db, username)
+    editprofile.add_language(db, user_id,  language)
+    return redirect("/user/" + session["username"] + "/profile/edit")
 
 """Shows who you are following"""
 @app.route("/user/<username>/following")
