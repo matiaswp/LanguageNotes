@@ -14,6 +14,7 @@
 
 <p>{{ message }}</p>
 <form action="/user/{{ username }}/profile" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" name="follow" value="{{ follow }}">
 </form>
 <h2>Lists</h2>

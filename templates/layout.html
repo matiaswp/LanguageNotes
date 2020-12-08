@@ -26,6 +26,7 @@
             </li>
             <li>
                 <form class="form-inline my-1 my-lg-0" action="/search" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <input class="form-control" type="text" placeholder="Enter username" name="search" required>
                     <input class="btn btn-primary" type="submit" value="Search">
                 </form>
@@ -34,9 +35,9 @@
         </ul>
     </nav>
     <div>
-{% block content %}
+        {% block content %}
 
 
 
-{% endblock %}
+        {% endblock %}
     </div>

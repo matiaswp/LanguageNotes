@@ -16,7 +16,6 @@ IMPORTANT
         --- Card creation/edit/delete succesful
     -- Editprofile
         --- Changes succesful or language add failed
-- CSRF protection
 - Make this app good looking (:
 - acessing ur own list through profile? 
 - deleting language
@@ -50,3 +49,4 @@ FINISHED?
 - Strip values gotten from forms before adding them to database
 - Validation of forms
     -- min and max lengths (renameing and creation of cards and lists)
+- CSRF protection

@@ -5,15 +5,17 @@
 
 <h2>Edit languages you are learning</h2>
 <h3>Can learn up to three languages</br>
-Leaving a field empty gets rid of the language</h3>
+    Leaving a field empty gets rid of the language</h3>
 <h3>Add language</h3>
 <form action="/user/{{ session.username }}/profile/edit/add" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="text" name="lang" placeholder="Enter language" required>
     <input type="submit" value="Add"></p>
 </form>
 <h3>Edit language</h3>
 {% for lang in languages %}
 <form action="/user/{{ session.username }}/profile/edit" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="lang" value="{{ lang[0] }}">
     <input type="text" name="lang1" value="{{ lang[0] }}" required>
     <input type="submit" value="Change"></p>

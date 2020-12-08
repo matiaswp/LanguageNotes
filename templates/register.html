@@ -6,45 +6,44 @@
 <h2>{{ message }}</h2>
 <form action="/register" method="POST" onsubmit="return check(this)">
     <p>Username (3-16 characters)<br>
-    <input type="text" name="username" required></p>
+        <input type="text" name="username" required></p>
     <p>Enter password (6-16 characters)<br>
-    <input type="password" name="password" required></p>
+        <input type="password" name="password" required></p>
     <p>Retype entered password</br>
-    <input type="password" name="retypedPassword" required></p>
+        <input type="password" name="retypedPassword" required></p>
     <input type="submit" value="Create an account">
 </form>
 
 <a href="/">Already have an account? Login here</p>
-{% endif %}
+    {% endif %}
 
-<script>
-function check(form) {
-    if (form.username.value.length < 3) {
-        alert("Username is too short");
-        return false;
-    }
+    <script>
+        function check(form) {
+            if (form.username.value.length < 3) {
+                alert("Username is too short");
+                return false;
+            }
 
-    if (form.username.value.length > 16) {
-        alert("Username is too long");
-        return false;
-    }
+            if (form.username.value.length > 16) {
+                alert("Username is too long");
+                return false;
+            }
 
-    if (form.password.value.length < 6) {
-        alert("Password is too short");
-    }
+            if (form.password.value.length < 6) {
+                alert("Password is too short");
+            }
 
-    if (form.password.value.length > 16) {
-        alert("Password is too long");
-    }
-    pw1 = form.password.value;
-    pw2 = form.retypedPassword.value;
-    
-    if (pw1 == pw2) {
-        
-        return true
-    }
-    alert("Passwords don't match");
-    return false;
-}
+            if (form.password.value.length > 16) {
+                alert("Password is too long");
+            }
+            pw1 = form.password.value;
+            pw2 = form.retypedPassword.value;
 
-</script>
+            if (pw1 == pw2) {
+
+                return true
+            }
+            alert("Passwords don't match");
+            return false;
+        }
+    </script>

@@ -2,19 +2,18 @@
 <h1>Hello</h1>
 <p>Logged in as {{ session.username }}</p>
 <a href="/home">home</br>
-<a href="/logout">Logout</a>
-{% else %}
-<h1>Login</h1>
-<h2>{{ message }}</h2>
-<form action="/login" method="POST">
-<p>Username:<br>
-<input type="text" name="username"></p>
-<p>Password:<br>
-<input type="password" name="password"></p>
-<input type="submit" value="Login">
-</form>
-<p></p>
-<p>Don't have an account yet?</p>
-<a href="/register">Register here</a>
-{% endif %}
-
+    <a href="/logout">Logout</a>
+    {% else %}
+    <h1>Login</h1>
+    <h2>{{ message }}</h2>
+    <form action="/login" method="POST">
+        <p>Username:<br>
+            <input type="text" name="username"></p>
+        <p>Password:<br>
+            <input type="password" name="password"></p>
+        <input type="submit" value="Login">
+    </form>
+    <p></p>
+    <p>Don't have an account yet?</p>
+    <a href="/register">Register here</a>
+    {% endif %}

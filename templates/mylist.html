@@ -8,37 +8,40 @@
 
 <p>Add card</p>
 <form action="/user/{{ session.username }}/mylists/{{ listname }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <p>Word:<br>
-    <input type="text" name="word" placeholder="Enter word" required></p>
+        <input type="text" name="word" placeholder="Enter word" required></p>
     <p>Translation:</p>
     <input type="text" name="translation" placeholder="Enter translation" required></p>
     <input type="submit" value="Add">
 </form>
 <p>
-<h3>{{ message }}</h3>
-<h3>Cards: </h3>
-{% for card in cards %}
-<ul>
-    <form action="/user/{{ session.username }}/mylists/{{ listname }}/deletecard" method="POST">
-        <li>{{ card[0] }} {{ card[1] }} {{ card[2] }}
-        <input type=hidden value="{{ card[0] }}" name="word">
-        <input type=hidden value="{{ card[1] }}" name="translation">
-        <input type=hidden value="{{ name }}" name="listname">
-        <input type="submit" name="btn" value="delete">
-        </li>
-    </form>
-
-    <div>
-        <form action="/user/{{ session.username }}/mylists/{{ listname }}/editcard" method="POST">
-            <input type=hidden value="{{ card[0] }}" name="word">
-            <input type=hidden value="{{ card[1] }}" name="translation">
-            <input type=hidden name="listname" value="{{ name }}">
-            <input type="text" name="newWord" value="{{ card[0] }}" required>
-            <input type="text" name="newTranslation" value="{{ card[1] }}" required>
-            <input type="submit" value="Edit">
+    <h3>{{ message }}</h3>
+    <h3>Cards: </h3>
+    {% for card in cards %}
+    <ul>
+        <form action="/user/{{ session.username }}/mylists/{{ listname }}/deletecard" method="POST">
+            <li>{{ card[0] }} {{ card[1] }} {{ card[2] }}
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type=hidden value="{{ card[0] }}" name="word">
+                <input type=hidden value="{{ card[1] }}" name="translation">
+                <input type=hidden value="{{ name }}" name="listname">
+                <input type="submit" name="btn" value="delete">
+            </li>
         </form>
-    </div>
-<p>
-</ul>
-{% endfor %}
-{% endblock %}
+
+        <div>
+            <form action="/user/{{ session.username }}/mylists/{{ listname }}/editcard" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type=hidden value="{{ card[0] }}" name="word">
+                <input type=hidden value="{{ card[1] }}" name="translation">
+                <input type=hidden name="listname" value="{{ name }}">
+                <input type="text" name="newWord" value="{{ card[0] }}" required>
+                <input type="text" name="newTranslation" value="{{ card[1] }}" required>
+                <input type="submit" value="Edit">
+            </form>
+        </div>
+        <p>
+    </ul>
+    {% endfor %}
+    {% endblock %}

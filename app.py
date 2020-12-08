@@ -6,6 +6,9 @@ import userlists
 import userlist
 import editprofile
 from flask_sqlalchemy import SQLAlchemy
+import os
+from werkzeug.exceptions import abort
+
 
 app = Flask(__name__)
 app.secret_key = getenv("SECRET_KEY")
@@ -24,6 +27,7 @@ def login():
     if database.check_credentials(db, username, password) == True:
         session["username"] = username
         session["logged_in"] = True
+        session["csrf_token"] = os.urandom(16).hex()
         return redirect("/home")
     else:
         message = "Username or password incorrect"
@@ -87,7 +91,8 @@ def mylists(username):
     except:
         message = ""
     if request.method == "POST":
-    
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         if session["username"] != username:
             return redirect("/user/" + session["username"] + "/mylists")
 
@@ -117,6 +122,8 @@ def show_list(username, listname):
     cards = userlist.show_cards(db, username, listname)
 
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         word = request.form["word"].strip()
         translation = request.form["translation"].strip()
 
@@ -139,6 +146,8 @@ def show_list(username, listname):
 
 @app.route("/user/<username>/mylists/<listname>/delete", methods=["POST"])
 def delete_list(username, listname):
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     try:
         session["username"].strip()
     except:
@@ -153,6 +162,8 @@ def delete_list(username, listname):
 
 @app.route("/user/<username>/mylists/<listname>/edit", methods=["POST"])
 def edit_list(username, listname):
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     try:
         session["username"].strip()
     except:
@@ -161,7 +172,7 @@ def edit_list(username, listname):
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists")
     username = session["username"]
-    listname = request.form["listname"].strip()
+    listname = request.form["listname"]
     new_name = request.form["newName"].strip()
     if new_name == "" or len(new_name) > 25:
         #TODO
@@ -172,6 +183,8 @@ def edit_list(username, listname):
 
 @app.route("/user/<username>/mylists/<listname>/deletecard", methods=["POST"])
 def delete_card(username, listname):
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     try:
         session["username"].strip()
     except:
@@ -188,6 +201,8 @@ def delete_card(username, listname):
 
 @app.route("/user/<username>/mylists/<listname>/editcard", methods=["POST"])
 def edit_card(username, listname):
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     try:
         session["username"].strip()
     except:
@@ -221,6 +236,8 @@ def flashcard(username, listname):
     cards = userlist.show_study_cards(db, username, listname)
     length = len(cards)
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         word = request.form["word"]
         translation = request.form["translation"]
 
@@ -246,6 +263,8 @@ def profile(username):
     follow_status = database.check_if_following(db, session["username"], username)
 
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         if follow_status:
             database.unfollow(db, session["username"], username)
             return redirect("/user/" + username + "/profile")
@@ -287,13 +306,15 @@ def edit_profile(username):
         return redirect("/")
     
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
 
         new_lang = request.form["lang1"].strip()
         old_lang = request.form["lang"]
 
         if new_lang == "" or len(new_lang) > 25:
             return redirect("/user/" + username + "/profile/edit")
-            
+
         if editprofile.check_if_learning(db, username, new_lang):
             return redirect("/user/" + username + "/profile/edit")
 
@@ -307,6 +328,8 @@ def edit_profile(username):
 
 @app.route("/user/<username>/profile/edit/add", methods=["POST"])
 def edit_add_lang(username):
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     try:
         session["username"].strip()
     except:
@@ -353,6 +376,8 @@ def info_about():
 
 @app.route("/search", methods=["POST"])
 def search():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     try:
         session["username"].strip()
     except:
