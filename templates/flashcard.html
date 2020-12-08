@@ -12,8 +12,12 @@
     <div id="cardback" style="visibility:hidden">
         <b id="answerCard">{{ cards[0].translation }}</b>
         <br>
-        <input type="button" name="flip" value="Didn't get it..." onclick="nextCard()">
-        <input type="button" name="flip" value="Got it!" onclick="nextCard()">
+        <form action="/user/{{ session.username }}/mylists/{{ listname }}/study" method="POST">
+            <input id="translation" type="hidden" name="word" value="{{ cards[0].word }}">
+            <input id="word" type="hidden" name="translation" value="{{ cards[0].translation }}">
+            <input type="submit" name="flip" value="Didn't get it..." onclick="nextCard()">
+            <input type="submit" name="flip" value="Got it!" onclick="nextCard()">
+        </form>
     </div>
 </div>
 <div id="finished" style="visibility:hidden">
@@ -52,6 +56,8 @@
         if (translations.length >  currentCard) {
             document.getElementById("meaningCard").textContent = words[currentCard];
             document.getElementById("answerCard").textContent = translations[currentCard];
+            document.getElementById("word").innerHTML = words[currentCard];
+            document.getElementById("translation").innerHTML = translations[currentCard];
             document.getElementById("cardsLeft").textContent = cardsLeft;
             currentCard++;    
             

@@ -14,11 +14,11 @@
 
 <p>{{ message }}</p>
 <form action="/user/{{ username }}/profile" method="POST">
-    <input type="submit" name="follow" value="{{ follow }}"> 
+    <input type="submit" name="follow" value="{{ follow }}">
 </form>
 <h2>Lists</h2>
 {% for list in lists %}
 <a href="/user/{{ username }}/profile/{{ list[0] }}">{{ list[0] }}</br>
-{% endfor %}
-{% endif %}
-{% endblock %}
+    {% endfor %}
+    {% endif %}
+    {% endblock %}

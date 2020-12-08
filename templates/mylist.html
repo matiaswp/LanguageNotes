@@ -9,9 +9,9 @@
 <p>Add card</p>
 <form action="/user/{{ session.username }}/mylists/{{ listname }}" method="POST">
     <p>Word:<br>
-    <input type="text" name="word" required></p>
+    <input type="text" name="word" placeholder="Enter word" required></p>
     <p>Translation:</p>
-    <input type="text" name="translation" required></p>
+    <input type="text" name="translation" placeholder="Enter translation" required></p>
     <input type="submit" value="Add">
 </form>
 <p>

@@ -6,7 +6,7 @@
 <p>Creata a new list</p>
 <form action="/user/{{ session.username }}/mylists" method="POST">
     <p>Name for the list:<br>
-    <input type="text" name="listname" required></p>
+    <input type="text" name="listname" required placeholder="Enter name (1-25 long)"></p>
     <input type="submit" value="Create">
 </form>
 <h3>Lists</h3>
@@ -21,7 +21,7 @@
     <form action="/user/{{ session.username }}/mylists/{{ list[0] }}/edit" 
     method="POST">
         <input type="hidden" name="listname" value="{{ list[0] }}">
-        <input type="text" name="newName" placeholder="Enter new name" required>
+        <input type="text" name="newName" placeholder="Enter new name (1-25 long)" required>
         <input type="submit" value="Rename">
     </form>
 </div>

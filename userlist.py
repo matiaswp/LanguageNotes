@@ -70,6 +70,22 @@ def show_cards(SQLAlchemy, username, name):
 
     return cards
 
+"""Returns all cards that's date is today or in the past"""
+def show_study_cards(SQLAlchemy, username, listname):
+    sql = "SELECT id FROM userinfo WHERE username=:username"
+    get_id = SQLAlchemy.session.execute(sql, {"username":username})
+    user_id = get_id.fetchone()[0]
+
+    sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
+    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
+    list_id = get_list.fetchone()[0]
+
+    sql3 = "SELECT word, translation FROM cards WHERE list_id=:list_id AND date<=NOW() "\
+        "ORDER BY date"
+    get_cards = SQLAlchemy.session.execute(sql3, {"list_id":list_id})
+    cards = get_cards.fetchall()
+    return cards
+
 #Adds more date to a card. Used by SRS system.
 def add_more_date(SQLAlchemy, username, listname, word, translation, answer):
     sql = "SELECT id FROM userinfo WHERE username=:username"
@@ -80,14 +96,18 @@ def add_more_date(SQLAlchemy, username, listname, word, translation, answer):
     get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
     list_id = get_list.fetchone()[0]
 
-    sql3 = "SELECT id, difficulty FROM cards WHERE word=:word AND "\
-            "translation=:translation AND list_id=:listid"
+    sql3 = "SELECT id FROM cards WHERE word=:word AND "\
+            "translation=:translation AND list_id=:list_id"
     get_card = SQLAlchemy.session.execute(sql3, {"word":word, "translation":translation, 
         "list_id":list_id})
     card_id = get_card.fetchone()[0]
-    difficulty = get_card.fetchone()[1]
+    sql3 = "SELECT difficulty FROM cards WHERE word=:word AND "\
+            "translation=:translation AND list_id=:list_id"
+    get_card = SQLAlchemy.session.execute(sql3, {"word":word, "translation":translation, 
+        "list_id":list_id})
+    difficulty = get_card.fetchone()[0]
 
-    sql4 = "UPDATE cards SET difficulty=:newDiff, date=NOW()+:date WHERE id=" + card_id
+    sql4 = "UPDATE cards SET difficulty=:new_diff, date=NOW()+ INTERVAL':date day' WHERE id="+str(card_id)
     if answer == "correct":
         if difficulty == 1:
             date = 1
@@ -106,10 +126,13 @@ def add_more_date(SQLAlchemy, username, listname, word, translation, answer):
             new_diff = difficulty
 
         
-        SQLAlchemy.session.execute(sql4, {"difficulty":new_diff, "date":date})
+        SQLAlchemy.session.execute(sql4, {"new_diff":new_diff, "date":date})
         SQLAlchemy.session.commit()
     else:
         date = 1
-        SQLAlchemy.session.execute(sql4, {"difficulty":1, "date":date})
+        if difficulty == 1:
+            date = 0    
+        SQLAlchemy.session.execute(sql4, {"new_diff":1, "date":date})
         SQLAlchemy.session.commit()
+    return True
 

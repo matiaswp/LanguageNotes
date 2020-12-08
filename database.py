@@ -144,7 +144,9 @@ def show_following(SQLAlchemy, username):
     return following
 
 def get_user_id(SQLAlchemy, username):
+
     sql = "SELECT id FROM userinfo WHERE username=:username"
     get_id = SQLAlchemy.session.execute(sql, {"username":username})
     user_id = get_id.fetchone()[0]
     return user_id
+
