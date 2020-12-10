@@ -8,7 +8,7 @@ import editprofile
 from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.exceptions import abort
-
+from flask.helpers import flash
 
 app = Flask(__name__)
 app.secret_key = getenv("SECRET_KEY")
@@ -24,6 +24,10 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
     
+    if username.strip() == "" or password.strip() == "":
+        message = "Username or password incorrect"
+        return render_template("login.html", message=message)        
+
     if database.check_credentials(db, username, password) == True:
         session["username"] = username
         session["logged_in"] = True
@@ -82,36 +86,43 @@ def register_page():
 
 @app.route("/user/<username>/mylists", methods=["GET", "POST"])    
 def mylists(username):
+
     try:
         session["username"].strip()
     except:
         return redirect("/")
+
+    if username != session["username"]:
+        return redirect("/user/" + session["username"] + "/mylists")
+
+    
+
     try:
         message = request.args("message")
     except:
         message = ""
+
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
-        if session["username"] != username:
-            return redirect("/user/" + session["username"] + "/mylists")
 
         username = session["username"]
         name = request.form["listname"].strip()
 
-        #If name empty, redirect same page. TODO add error message.
         if name == "" or len(name) > 25:
-            return redirect("/user/" + session["username"] + "/mylists")
-
-        userlists.create_new_list(db, username, name)
-        return redirect("/user/" + username + "/mylists")
-    else:
-        if session["username"] == username:
-            user_list = userlists.list_lists(db,username)
-            return render_template("mylists.html", lists=user_list, message=message)
-        else:
+            flash("Invalid listname. Empty or too long", category="error")
             return redirect("/user/" + session["username"] + "/mylists")
         
+        if userlists.create_new_list(db, username, name):
+            flash("List added successfully", category="message")
+            return redirect("/user/" + session["username"] + "/mylists")
+        else:
+            flash("Listname already in use.", category="error")
+            return redirect("/user/" + session["username"] + "/mylists")
+    else:
+        user_list = userlists.list_lists(db,username)
+        return render_template("mylists.html", lists=user_list, message=message)
+                  
 @app.route("/user/<username>/mylists/<listname>", methods=["POST", "GET"])
 def show_list(username, listname):
     try:
@@ -119,7 +130,6 @@ def show_list(username, listname):
     except:
         return redirect("/")
     username = session["username"]
-    cards = userlist.show_cards(db, username, listname)
 
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
@@ -128,21 +138,19 @@ def show_list(username, listname):
         translation = request.form["translation"].strip()
 
         if word == "" or translation == "":
-            message = "Can't create a card with empty values"
-            return render_template("mylist.html", listname=listname, cards=cards, 
-            message=message)
+            flash("Can't create a card with empty values", category="error")
+            return redirect("/user/" + username + "/mylists/" + listname)
         if len(word) > 50 or len(translation) > 50:
-            message = "Values are too long"
-            return render_template("mylist.html", listname=listname, cards=cards, 
-            message=message)
-        message = ""
+            flash("Given values are too long", category="error")
+            return redirect("/user/" + username + "/mylists/" + listname)
+
         userlist.add_card_to_list(db,username, listname, word, translation)
+        flash("Card added successfully", category="message")
         return redirect("/user/" + username + "/mylists/" + listname)
     else:
         username = session["username"]
         cards = userlist.show_cards(db, username, listname)
-        message = ""
-        return render_template("mylist.html", listname=listname, cards=cards, message=message)
+        return render_template("mylist.html", listname=listname, cards=cards)
 
 @app.route("/user/<username>/mylists/<listname>/delete", methods=["POST"])
 def delete_list(username, listname):
@@ -158,6 +166,7 @@ def delete_list(username, listname):
 
     username = session["username"]
     userlists.delete_list(db, username, listname)
+    flash("List deleted successfully", category="message")
     return redirect("/user/" + username + "/mylists")
 
 @app.route("/user/<username>/mylists/<listname>/edit", methods=["POST"])
@@ -171,15 +180,22 @@ def edit_list(username, listname):
 
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists")
+
+    user_list = userlists.list_lists(db,username)
     username = session["username"]
     listname = request.form["listname"]
     new_name = request.form["newName"].strip()
+
     if new_name == "" or len(new_name) > 25:
-        #TODO
-        message = "Invalid name"
-        return redirect(url_for(".mylists", message=message, username=username))
-    userlists.edit_list(db, username, listname, new_name)
-    return redirect("/user/" + username + "/mylists")
+        flash("Invalid listname. Empty or too long", category="error")
+        return redirect("/user/" + username + "/mylists")
+
+    if userlists.edit_list(db, username, listname, new_name):
+        flash("Edited listname succesfully", category="message")
+        return redirect("/user/" + username + "/mylists")
+    else:
+        flash("Listname already in use.", category="error")
+        return redirect("/user/" + username + "/mylists")
 
 @app.route("/user/<username>/mylists/<listname>/deletecard", methods=["POST"])
 def delete_card(username, listname):
@@ -197,6 +213,7 @@ def delete_card(username, listname):
     word = request.form["word"]
     translation = request.form["translation"]
     userlist.remove_card_from_list(db, username, listname, word, translation)
+    flash("Card deleted successfully", category="message")
     return redirect("/user/" + username + "/mylists/" + listname)
 
 @app.route("/user/<username>/mylists/<listname>/editcard", methods=["POST"])
@@ -211,18 +228,22 @@ def edit_card(username, listname):
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists/" + listname)
 
+    
     word = request.form["word"].strip()
     translation = request.form["translation"].strip()
     new_word = request.form["newWord"].strip()
     new_translation = request.form["newTranslation"].strip()
 
     if new_word == "" or new_translation == "":
+        flash("Can't rename cards with empty values", category="error")
         return redirect("/user/" + username + "/mylists/" + listname)
 
-    if len(new_word) > 50 or len(new_translation) > 50:
+    if len(new_word) > 100 or len(new_translation) > 100:
+        flash("Given values are too long (the limit is 100 :))", category="error")
         return redirect("/user/" + username + "/mylists/" + listname)
 
     userlist.edit_card(db, listname, username, word, translation, new_word, new_translation)
+    flash("Card edited succesfully", category="message")
     return redirect("/user/" + username + "/mylists/" + listname)
 
 @app.route("/user/<username>/mylists/<listname>/study", methods=["GET", "POST"])
@@ -267,9 +288,11 @@ def profile(username):
             abort(403)
         if follow_status:
             database.unfollow(db, session["username"], username)
+            flash("Unfollowed succesfully", category="message")
             return redirect("/user/" + username + "/profile")
         else:
             database.follow(db, session["username"], username)
+            flash("Followed successfully", category="message")
             return redirect("/user/" + username + "/profile")
     else:
         message = ""
@@ -293,7 +316,8 @@ def usercardlist(username, listname):
         session["username"].strip()
     except:
         return redirect("/")
-
+    if username == session["username"]:
+        return redirect("/user/" + session["username"] + "/mylists/" + listname)
     cards = userlist.show_cards(db, username, listname)
     return render_template("userlist.html", username=username, listname=listname,
     cards=cards)
@@ -313,12 +337,16 @@ def edit_profile(username):
         old_lang = request.form["lang"]
 
         if new_lang == "" or len(new_lang) > 25:
+            flash("Invalid language. Empty or too long.", category="error")
             return redirect("/user/" + username + "/profile/edit")
 
+        """Method returns true if already learning given language"""
         if editprofile.check_if_learning(db, username, new_lang):
+            flash("Already learning that language.", category="error")
             return redirect("/user/" + username + "/profile/edit")
 
         editprofile.edit_language(db, username, new_lang, old_lang)
+        flash("Language edited successfully.", category="message")
         return redirect("/user/" + username + "/profile/edit")
     else:
         if username != session["username"]:
@@ -341,16 +369,37 @@ def edit_add_lang(username):
     languages = editprofile.get_languages(db, session["username"])
     language = request.form["lang"].strip()
     if language == "" or len(language) > 25:
+        flash("Invalid language. Empty or too long.", category="error")
         return redirect("/user/" + session["username"] + "/profile/edit")
 
     if len(languages) >= 3:
+        flash("Already learning max amount of languages.", category="error")
         return redirect("/user/" + session["username"] + "/profile/edit")
 
+    """Method returns true if already learning given language"""
     if editprofile.check_if_learning(db, username, language):
+        flash("Already learning that language.", category="error")
         return redirect("/user/" + session["username"] + "/profile/edit")
 
     user_id = database.get_user_id(db, username)
     editprofile.add_language(db, user_id,  language)
+    flash("Language added successfully.", category="message")
+    return redirect("/user/" + session["username"] + "/profile/edit")
+
+@app.route("/user/<username>/profile/edit/delete", methods=["POST"])
+def edit_delete_lang(username):
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    try:
+        session["username"].strip()
+    except:
+        return redirect("/")
+    if username != session["username"]:
+        return redirect("/user/" + session["username"] + "/profile/edit")
+
+    language = request.form["language"]
+    editprofile.delete_language(db, username, language)
+    flash("Language deleted successfully.", category="message")
     return redirect("/user/" + session["username"] + "/profile/edit")
 
 @app.route("/user/<username>/following")

@@ -12,13 +12,28 @@
     <input type="text" name="lang" placeholder="Enter language" required>
     <input type="submit" value="Add"></p>
 </form>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<ul class=flashes>
+    {% for category, message in messages %}
+    <h2 class="{{ category }}">{{ message }}</h2>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
 <h3>Edit language</h3>
 {% for lang in languages %}
 <form action="/user/{{ session.username }}/profile/edit" method="POST">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="lang" value="{{ lang[0] }}">
     <input type="text" name="lang1" value="{{ lang[0] }}" required>
-    <input type="submit" value="Change"></p>
+    <input type="submit" value="Change">
 </form>
-{% endfor %}
-{% endblock %}
+<form action="/user/{{ session.username }}/profile/edit/delete" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="language" value="{{ lang[0] }}">
+    <input type="submit" value="Delete" name="">
+</form>
+<p>
+    {% endfor %}
+    {% endblock %}

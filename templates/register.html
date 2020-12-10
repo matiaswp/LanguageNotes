@@ -16,34 +16,3 @@
 
 <a href="/">Already have an account? Login here</p>
     {% endif %}
-
-    <script>
-        function check(form) {
-            if (form.username.value.length < 3) {
-                alert("Username is too short");
-                return false;
-            }
-
-            if (form.username.value.length > 16) {
-                alert("Username is too long");
-                return false;
-            }
-
-            if (form.password.value.length < 6) {
-                alert("Password is too short");
-            }
-
-            if (form.password.value.length > 16) {
-                alert("Password is too long");
-            }
-            pw1 = form.password.value;
-            pw2 = form.retypedPassword.value;
-
-            if (pw1 == pw2) {
-
-                return true
-            }
-            alert("Passwords don't match");
-            return false;
-        }
-    </script>

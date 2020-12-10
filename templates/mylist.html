@@ -16,7 +16,15 @@
     <input type="submit" value="Add">
 </form>
 <p>
-    <h3>{{ message }}</h3>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class=flashes>
+        {% for category, message in messages %}
+        <h2 class="{{ category }}">{{ message }}</h2>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
     <h3>Cards: </h3>
     {% for card in cards %}
     <ul>

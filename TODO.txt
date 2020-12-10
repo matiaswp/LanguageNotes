@@ -7,25 +7,15 @@ IMPORTANT
 - Rest of functionality and pages
     -- SRS (almost done, pagereload and stuff left)
     -- Info/About page
-- Overall messages for users (Errors need improvement tho)
-    -- Mylists
-        --- List creation -> Invalid name / already in use
-        --- List renaming -> Cant rename to already existing list
-        --- List creation/edit/delete successful
-    -- Inside lists
-        --- Card creation/edit/delete succesful
-    -- Editprofile
-        --- Changes succesful or language add failed
 - Make this app good looking (:
-- acessing ur own list through profile? 
-- deleting language
+    -- Colors for messages to users (error messages red, successes green etc.)
+- Searching with empty. redirect weird?
 
 IMPORTANT BUT CAN LIVE WITH THEM EXISTING
 - Login automatically after successful registeration.
 - Fix: Deletes all same value cards
 - Improve SQL queries
 - Popup window for editing lists and cards
--- List copying
 
 FINISHED?
 - View other users' lists' content(DONE?)
@@ -50,3 +40,17 @@ FINISHED?
 - Validation of forms
     -- min and max lengths (renameing and creation of cards and lists)
 - CSRF protection
+- acessing ur own list through profile? 
+- Overall messages for users (Errors need improvement tho)
+        --- List creation -> Invalid name / already in use
+        --- List renaming -> Cant rename to already existing list
+    -- Mylists
+        --- List creation/edit/delete successful
+    -- Inside lists
+        --- Card creation/edit/delete succesful
+    -- Editprofile
+        --- Changes succesful
+        --- Language add succesful
+        --- Language delete succesful
+        --- Language add fails
+- deleting language

@@ -42,15 +42,14 @@ def get_languages(SQLAlchemy, username):
         return False
     
 def check_if_learning(SQLAlchemy, username, language):
-
+    
     if language.strip() == "":
         return True
         
-    if len(language) < 3 or len(language) > 25:
-        return True
 
     user_id = database.get_user_id(SQLAlchemy, username)
-    get_lang_sql = "SELECT language FROM languages WHERE user_id=:user_id AND language=:language"
+    get_lang_sql = "SELECT language FROM languages WHERE user_id=:user_id AND LOWER(language)"\
+    "=LOWER(:language)"
     get_language = SQLAlchemy.session.execute(get_lang_sql, {"user_id":user_id, 
     "language":language})
 

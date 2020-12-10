@@ -1,7 +1,6 @@
-<h1>Your collection</h1>
-
 {% extends "layout.html" %}
 {% block content %}
+<h1>Your collection</h1>
 <br>
 <p>Creata a new list</p>
 <form action="/user/{{ session.username }}/mylists" method="POST">
@@ -10,9 +9,17 @@
   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
   <input type="submit" value="Create">
 </form>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for category, message in messages %}
+      <h2 class="{{ category }}">{{ message }}</h2>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
 <h3>Lists</h3>
 <div>
-  {{ message }}
   {% for list in lists %}
   <form action="/user/{{ session.username }}/mylists/{{ list[0] }}/delete" method="POST">
     <a href="/user/{{ session.username }}/mylists/{{ list[0] }}">{{ list[0] }}</a>

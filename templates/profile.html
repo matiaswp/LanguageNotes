@@ -17,6 +17,15 @@
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" name="follow" value="{{ follow }}">
 </form>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for category, message in messages %}
+      <h2 class="{{ category }}">{{ message }}</h2>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
 <h2>Lists</h2>
 {% for list in lists %}
 <a href="/user/{{ username }}/profile/{{ list[0] }}">{{ list[0] }}</br>
