@@ -1,2 +1,37 @@
-<h1>Home</h1>
 {% extends "layout.html" %}
+{% block content %}
+<title>Language Notes</title>
+<div class="container h-100">
+    <div class="row">
+        <div>
+            <div class="bg-light">
+                <h1>Welcome to language Notes, {{ session.username }}<p>
+
+                </h1>
+                <div class="col-9">
+                    How about studying for a little while? Or perhaps you already have, in which case
+                    , go relax for a moment! Or you might not have even made a list yet, go make one right now!
+                    Anyways I hope you will be successfull in learning your desired language!
+
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="bg-light">
+            <p></p>
+            <h1>Some friendly advice</h1>
+            <div class="col-9">
+                Learning a language is a tough process. You will have to do it piece by piece. Don't try to
+                memorize too many new things a day because that will exhaust you quickly. Here's a few things
+                to try to keep in mind while learning.
+                <ul>
+                <li>Don't memorize too much everyday</li>
+                <li>Try to practise everyday. Even if its only 5 minutes, thats better that nothing</li>
+                <li>Try to find the motivation behind wanting to learn a language and work towards that.</li>
+                <li>Lastly, remember to have fun with your studies!</li>
+            </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

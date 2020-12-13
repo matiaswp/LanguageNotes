@@ -1,12 +1,13 @@
-<h1>{{ listname }}</h1>
-
 {% extends "layout.html" %}
 {% block content %}
-<h2><a href="/user/{{ session.username }}/mylists/{{ listname }}/study">study</a></h2>
-<h3>Note: Study mode requires javascript to be enabled</h3>
-<br>
-
-<p>Add card</p>
+<div>
+<div class="container h-100">
+<div class="row">
+    <div class="col-10">
+<h1>List: {{ listname }}</h1>
+<h2><a href="/user/{{ session.username }}/mylists/{{ listname }}/study">Study cards</a></h2>
+<p>Note: Study mode requires javascript to be enabled</p>
+<h3>Add card</h3>
 <form action="/user/{{ session.username }}/mylists/{{ listname }}" method="POST">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <p>Word:<br>
@@ -16,28 +17,26 @@
     <input type="submit" value="Add">
 </form>
 <p>
-    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% with messages = get_flashed_messages(category_filter=["message", "error"]) %}
     {% if messages %}
-    <ul class=flashes>
-        {% for category, message in messages %}
+      {%- for message in messages %}
         <h2 class="{{ category }}">{{ message }}</h2>
-        {% endfor %}
-    </ul>
+      {% endfor %}
     {% endif %}
-    {% endwith %}
+  {% endwith %}
     <h3>Cards: </h3>
     {% for card in cards %}
-    <ul>
+    <li class="list-group-item bg-light">
         <form action="/user/{{ session.username }}/mylists/{{ listname }}/deletecard" method="POST">
-            <li>{{ card[0] }} {{ card[1] }} {{ card[2] }}
+            <b> Word: </b> {{ card[0] }} <b> Tranalstion: </b> {{ card[1] }} <b> Next review: </b> {{ card[2] }}
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type=hidden value="{{ card[0] }}" name="word">
                 <input type=hidden value="{{ card[1] }}" name="translation">
                 <input type=hidden value="{{ name }}" name="listname">
                 <input type="submit" name="btn" value="delete">
-            </li>
+            
         </form>
-
+        <p>
         <div>
             <form action="/user/{{ session.username }}/mylists/{{ listname }}/editcard" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -49,7 +48,9 @@
                 <input type="submit" value="Edit">
             </form>
         </div>
+        </li>
         <p>
-    </ul>
     {% endfor %}
+</div>
+</div>
     {% endblock %}

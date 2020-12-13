@@ -1,43 +1,61 @@
+
 <!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<style>
+body {
+    font-family: sans-serif;
+  }
+</style>
 <title>Language Notes</title>
-<div class="container">
-    <nav class="navbar navbar-expand-sm navbar-light">
+<div>
+<div class="container h-100">
+    <nav class="navbar navbar-expand-sm navbar-light bg-dark ">
 
-        <ul class="navbar-nav">
+        <ul class="navbar-nav nav-fill w-100">
             <li class="nav-item">
-                <a class="nav-link" href="/home">Home</a>
+                <h3><a class="nav-link text-light" href="/home">Home</a></h3>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/user/{{ session.username }}/profile">Profile</a>
+                <h3><a class="nav-link text-light" href="/user/{{ session.username }}/profile">Profile</a></h3>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/user/{{ session.username }}/mylists">My lists</a>
+                <h3><a class="nav-link text-light" href="/user/{{ session.username }}/mylists">My lists</a></h3>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/user/{{ session.username }}/following">Following</a>
+                <h3><a class="nav-link text-light" href="/user/{{ session.username }}/following">Following</a></h3>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/info">Info</a>
+                <h3><a class="nav-link text-light" href="/info">Info</a></h3>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/logout">Logout</a>
+                <h3><a class="nav-link text-light" href="/logout">Logout</a></h3>
             </li>
             <li>
-                <form class="form-inline my-1 my-lg-0" action="/search" method="POST">
+                <form class="form-inline my-1 my-lg-2" action="/search" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <input class="form-control" type="text" placeholder="Enter username" name="search" required>
                     <input class="btn btn-primary" type="submit" value="Search">
                 </form>
-                {{ error }}
+                {% with messages = get_flashed_messages(category_filter=["searchError"]) %}
+                {% if messages %}
+                  {%- for message in messages %}
+                    <h2 class="searchError" style="color:white">{{ message }}</h2>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
             </li>
         </ul>
     </nav>
     <div>
+</div>
+<p>
+    <p>
         {% block content %}
 
 
 
         {% endblock %}
-    </div>
+</div>

@@ -1,77 +1,82 @@
-<h1>Flashcard mode</h1>
-{% if length == 0 %}
-<h2>No cards in this list. Go add some to start!</h2>
-{% else %}
-<b id="listLength" value="{{ length }}">Cards in list: {{ length }}</br>
-    <b>Cards left: </b>
-    <b id="cardsLeft">{{ length }}</b>
-    <div id="cardfront">
-        <input type="button" name="flip" value="flip" onclick="flash()">
+<!doctype html>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+</style>
+<title>Language Notes</title>
+<div class="container h-100">
+    <div class="col-xs-1 text-center">
+        <h1>Flashcard mode</h1>
+        <p></p>
+            <b>Cards left: </b>
+            <b id="cardsLeft">{{ length }}</b>
+            <p></p>
+            <div id="cardfront">
+                <input type="button" name="flip" value="flip" onclick="flash()">
+            </div>
+            <h2 id="meaningCard">{{ cards[0].word }}</h2>
+            <hr>
+            <div id="cardback" style="visibility:hidden">
+                <h2 id="answerCard">{{ cards[0].translation }}</h2>
+                <br>
+                <form action="/user/{{ session.username }}/mylists/{{ listname }}/study" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    <input id="translation" type="hidden" name="word" value="{{ cards[0].word }}">
+                    <input id="word" type="hidden" name="translation" value="{{ cards[0].translation }}">
+                    <input type="submit" name="flip" value="Didn't get it..." onclick="nextCard()">
+                    <input type="submit" name="flip" value="Got it!" onclick="nextCard()">
+                </form>
+            </div>
+            <div id="finished" style="visibility:hidden">
+                <h2>No more cards to study for today!</h2>
+            </div>
+            <a href="/user/{{ session.username }}/mylists/{{ listname }}">Back</a>
     </div>
-    <b id="meaningCard">{{ cards[0].word }}</b>
-    <div id="cardback" style="visibility:hidden">
-        <b id="answerCard">{{ cards[0].translation }}</b>
-        <br>
-        <form action="/user/{{ session.username }}/mylists/{{ listname }}/study" method="POST">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-            <input id="translation" type="hidden" name="word" value="{{ cards[0].word }}">
-            <input id="word" type="hidden" name="translation" value="{{ cards[0].translation }}">
-            <input type="submit" name="flip" value="Didn't get it..." onclick="nextCard()">
-            <input type="submit" name="flip" value="Got it!" onclick="nextCard()">
-        </form>
-    </div>
-    </div>
-    <div id="finished" style="visibility:hidden">
-        <h2>No more cards to study for today!</h2>
-        {% endif %}
-        <a href="/user/{{ session.username }}/mylists/{{ listname }}">Back</a>
-        <script>
-            function flash() {
-                if (cardfront.style.visivility != "hidden") {
-                    document.getElementById("cardfront").style.visibility = "hidden";
-                    document.getElementById("cardback").style.visibility = "visible";
-                }
-            }
-            let words = [];
-            let translations = [];
-            let currentCard = 1;
+</div>
 
-            {
-                %
-                for card in cards %
-            }
-            words.push("{{ card[0] }}");
-            translations.push("{{ card[1] }}"); {
-                % endfor %
-            }
-            let cardsLeft = translations.length; {
-                % raw %
-            }
+<script>
+    function flash() {
+        if (cardfront.style.visivility != "hidden") {
+            document.getElementById("cardfront").style.visibility = "hidden";
+            document.getElementById("cardback").style.visibility = "visible";
+        } 
+    }
+    let words = [];
+    let translations = [];
+    let currentCard = 1;
+    
+    {% for card in cards %}
+    words.push("{{ card[0] }}");
+    translations.push("{{ card[1] }}");
+    {% endfor %}
+    let cardsLeft = translations.length;
+    {% raw %}
+    function nextCard() {
+        document.getElementById("cardfront").style.visibility = "visible";
+        document.getElementById("cardback").style.visibility = "hidden";
+        cardsLeft = cardsLeft - 1;
+        if (currentCard == translations.length) {
+            document.getElementById("cardfront").style.visibility = "hidden";
+            document.getElementById("cardback").style.visibility = "hidden";
+            document.getElementById("answerCard").style.visibility = "hidden";
+            document.getElementById("meaningCard").style.visibility = "hidden";
+            document.getElementById("finished").style.visibility = "visible";
+            document.getElementById("cardsLeft").textContent = cardsLeft;
+        }
+        if (translations.length >  currentCard) {
+            document.getElementById("meaningCard").textContent = words[currentCard];
+            document.getElementById("answerCard").textContent = translations[currentCard];
+            document.getElementById("word").innerHTML = words[currentCard];
+            document.getElementById("translation").innerHTML = translations[currentCard];
+            document.getElementById("cardsLeft").textContent = cardsLeft;
+            currentCard++;    
 
-            function nextCard() {
-                document.getElementById("cardfront").style.visibility = "visible";
-                document.getElementById("cardback").style.visibility = "hidden";
-                cardsLeft = cardsLeft - 1;
-                if (currentCard == translations.length) {
-                    document.getElementById("cardfront").style.visibility = "hidden";
-                    document.getElementById("cardback").style.visibility = "hidden";
-                    document.getElementById("answerCard").style.visibility = "hidden";
-                    document.getElementById("meaningCard").style.visibility = "hidden";
-                    document.getElementById("finished").style.visibility = "visible";
-                    document.getElementById("cardsLeft").textContent = cardsLeft;
-                }
-                if (translations.length > currentCard) {
-                    document.getElementById("meaningCard").textContent = words[currentCard];
-                    document.getElementById("answerCard").textContent = translations[currentCard];
-                    document.getElementById("word").innerHTML = words[currentCard];
-                    document.getElementById("translation").innerHTML = translations[currentCard];
-                    document.getElementById("cardsLeft").textContent = cardsLeft;
-                    currentCard++;
-
-                }
-
-
-            } {
-                % endraw %
-            }
-        </script>
+        }
+        
+        
+    }
+    {% endraw %}
+</script>

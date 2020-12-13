@@ -1,8 +1,24 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>{{ listname }}</h1>
-<h3>Cards</h3>
-{% for card in cards %}
-<p>{{ card[0] }} {{ card[1] }}</p>
-{% endfor %}
-{% endblock %}
+<div>
+    <div class="container h-100">
+        <div>
+        </div>
+        <div class="row">
+            <div class="col 10">
+                
+                <h1>{{ username }}'s list: {{ listname }}</h1>
+                <p></p>
+                <h2>Cards:</h2>
+                <p>
+                {% for card in cards %}
+                <li class="list-group-item bg-light">
+                <text><b>Word:</b> {{ card[0] }} <b>Translation:</b> {{ card[1] }}</text>
+                </li>
+                <p>
+                {% endfor %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</div>

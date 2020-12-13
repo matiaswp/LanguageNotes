@@ -1,19 +1,35 @@
-{% if session.username %}
-<h1>Hello</h1>
-<p>Logged in as {{ session.username }}</p>
-<a href="/home">home</br>
-    <a href="/logout">Logout</a>
-    {% else %}
-    <h1>Login</h1>
-    <h2>{{ message }}</h2>
-    <form action="/login" method="POST">
-        <p>Username:<br>
-            <input type="text" name="username"></p>
-        <p>Password:<br>
-            <input type="password" name="password"></p>
-        <input type="submit" value="Login">
-    </form>
-    <p></p>
-    <p>Don't have an account yet?</p>
-    <a href="/register">Register here</a>
-    {% endif %}
+<!doctype html>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<style>
+    body {
+        font-family: sans-serif;
+      }
+</style>
+<title>Language Notes</title>
+<div class="container h-100">
+<div class="col-xs-1 text-center">
+    {% if session.username %}
+    <h1>Hello</h1>
+    <p>Logged in as {{ session.username }}</p>
+    <h2><a href="/home">Home</a></h2>
+        <b><a href="/logout">Logout</a></b>
+        {% else %}
+        <h1>Login</h1>
+        <h2>{{ message }}</h2>
+        <form action="/login" method="POST">
+            <p >Username:<br>
+                <input type="text" name="username"></p>
+            <p>Password:<br>
+                <input type="password" name="password"></p>
+            <input type="submit" value="Login">
+        </form>
+        <p></p>
+        <p>Don't have an account yet?
+        <a href="/register">Register here</a>
+        {% endif %}
+    </div>
+</div>
+</div>
+</div>
