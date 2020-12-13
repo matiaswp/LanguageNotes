@@ -9,9 +9,6 @@
         {% if username == session.username %}
         <a href="/user/session.username/profile/edit">Edit profile</a>
         {% endif %}
-        {% if username == "User does not exist" %}
-        <h1>Oops! User does not exist :(</h1>
-        {% else %}
         <h1>{{ username }}'s profile</h1>
         <form action="/user/{{ username }}/profile" method="POST">
           <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -46,7 +43,6 @@
       </li>
       <p>
         {% endfor %}
-        {% endif %}
         {% endblock %}
       </div>
     </div>

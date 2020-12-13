@@ -425,11 +425,14 @@ def search():
         abort(403)
 
     username = request.form["search"].strip()
-
     if username == "":
-        flash("Can't search with empty input.", category="searchError")
+        flash("No input!", category="searchError")
         return redirect(request.referrer)
 
+    if database.check_if_username_exists(db,username):
+        flash("User does not exist.", category="searchError")
+        return redirect(request.referrer)
+        
     return redirect("/user/" + username + "/profile")
 
 def is_not_logged_in():
