@@ -30,9 +30,6 @@ body {
                     <input type="submit" name="flip" value="Got it!" onclick="nextCard()">
                 </form>
             </div>
-            <div id="finished" style="visibility:hidden">
-                <h2>No more cards to study for today!</h2>
-            </div>
             <a href="/user/{{ session.username }}/mylists/{{ listname }}">Back</a>
     </div>
 </div>
@@ -63,7 +60,6 @@ body {
             document.getElementById("cardback").style.visibility = "hidden";
             document.getElementById("answerCard").style.visibility = "hidden";
             document.getElementById("meaningCard").style.visibility = "hidden";
-            document.getElementById("finished").style.visibility = "visible";
             document.getElementById("cardsLeft").textContent = cardsLeft;
         }
         if (translations.length >  currentCard) {

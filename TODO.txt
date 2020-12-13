@@ -3,19 +3,7 @@ but some important things
 
 TODO:
 IMPORTANT
-- Code refactoring (for ex. remove repeating code, variable names, module names)
-- Rest of functionality and pages
-    -- SRS (almost done, pagereload and stuff left)
-    -- Info/About page
-- Make this app good looking (:
-    -- Colors for messages to users (error messages red, successes green etc.)
-- Searching with empty. redirect weird?
 
-IMPORTANT BUT CAN LIVE WITH THEM EXISTING
-- Login automatically after successful registeration.
-- Fix: Deletes all same value cards
-- Improve SQL queries
-- Popup window for editing lists and cards
 
 FINISHED?
 - View other users' lists' content(DONE?)
@@ -54,3 +42,12 @@ FINISHED?
         --- Language delete succesful
         --- Language add fails
 - deleting language
+- Searching with empty. redirect weird?
+- App looks good yes?
+    -- Put content to correct positions
+    -- Add other details
+- Code refactoring (for ex. remove repeating code, variable names, module names)
+    -- Improve SQL queries
+
+- Rest of functionality and pages
+    -- SRS (When all cards are finished)

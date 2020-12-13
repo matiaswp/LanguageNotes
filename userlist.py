@@ -1,68 +1,41 @@
 import app
 from flask_sqlalchemy import SQLAlchemy
-from flask import render_template
-from os import getenv
-from werkzeug.security import check_password_hash, generate_password_hash
+import database
+import userlists
 
-#Adds card to a given list
-def add_card_to_list(SQLAlchemy, username, name, word, translation):
+def add_card_to_list(SQLAlchemy, username, listname, word, translation):
 
-    get_id_sql = "SELECT id FROM userinfo WHERE username=:username"
-    get_id = SQLAlchemy.session.execute(get_id_sql, {"username":username})
-    user_id = get_id.fetchone()[0]
-
-    get_list_sql = "SELECT l.id FROM lists l, userinfo u WHERE l.user_id=u.id AND name=:name AND"\
-        " u.username=:username"
-    get_list = SQLAlchemy.session.execute(get_list_sql, {"username":username,"name":name})
-    list_id = get_list.fetchone()[0]
+    list_id = userlists.get_list_id(SQLAlchemy, username, listname)
 
     sql3 = "INSERT INTO cards (word, translation, date, list_id, difficulty) VALUES"\
          "(:word, :translation, NOW(), :list_id, 1)"
     SQLAlchemy.session.execute(sql3, {"word":word,"translation":translation,"list_id":list_id})
     SQLAlchemy.session.commit()
 
-#Removes a card from list
 def remove_card_from_list(SQLAlchemy, username, listname, word, translation):
-    sql = "SELECT id FROM userinfo WHERE username=:username"
-    get_id = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = get_id.fetchone()[0]
+    list_id = userlists.get_list_id(SQLAlchemy, username, listname)
 
-    sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
-    list_id = get_list.fetchone()[0]
-
-    sql3 = "DELETE FROM cards WHERE word=:word AND list_id=:list_id "\
+    delete_sql = "DELETE FROM cards WHERE word=:word AND list_id=:list_id "\
          "AND translation=:translation"
-    SQLAlchemy.session.execute(sql3, {"word":word, "list_id":list_id, \
+    SQLAlchemy.session.execute(delete_sql, {"word":word, "list_id":list_id, \
         "translation":translation})
     SQLAlchemy.session.commit()
 
-#Edit card
-def edit_card(SQLAlchemy, listname, username, word, translation, newWord, newTranslation):
-    sql = "SELECT id FROM userinfo WHERE username=:username"
-    get_id = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = get_id.fetchone()[0]
+def edit_card(SQLAlchemy, listname, username, word, translation, new_word, new_translation):
+    
+    list_id = userlists.get_list_id(SQLAlchemy, username, listname)
 
-    sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
-    list_id = get_list.fetchone()[0]
+    update_sql = "UPDATE cards SET word=:new_word, translation=:new_translation"\
+        " WHERE list_id=:list_id AND word=:word AND translation=:translation"
+    SQLAlchemy.session.execute(update_sql, {"new_word": new_word, "new_translation":new_translation, 
+    "word":word , "translation":translation, "list_id":list_id})
 
-    sql3 = "UPDATE cards SET word='"+newWord+"', translation='"+newTranslation+\
-        "' WHERE list_id='" + str(list_id) + "' AND word='"+word+"' AND translation='"\
-            +translation+"'"
-    SQLAlchemy.session.execute(sql3)
     SQLAlchemy.session.commit()
+    return True
 
-#Returns all cards from given list
-def show_cards(SQLAlchemy, username, name):
+def show_cards(SQLAlchemy, username, listname):
 
-    sql = "SELECT id FROM userinfo WHERE username=:username"
-    get_id = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = get_id.fetchone()[0]
-
-    sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":name})
-    list_id = get_list.fetchone()[0]
+    list_id = list_id = userlists.get_list_id(SQLAlchemy, username, listname)
 
     sql3 = "SELECT word, translation, date FROM cards WHERE list_id=:list_id ORDER BY date"
     get_cards = SQLAlchemy.session.execute(sql3, {"list_id":list_id})
@@ -70,15 +43,9 @@ def show_cards(SQLAlchemy, username, name):
 
     return cards
 
-"""Returns all cards that's date is today or in the past"""
 def show_study_cards(SQLAlchemy, username, listname):
-    sql = "SELECT id FROM userinfo WHERE username=:username"
-    get_id = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = get_id.fetchone()[0]
 
-    sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
-    list_id = get_list.fetchone()[0]
+    list_id = list_id = userlists.get_list_id(SQLAlchemy, username, listname)
 
     sql3 = "SELECT word, translation FROM cards WHERE list_id=:list_id AND date<=NOW() "\
         "ORDER BY date"
@@ -86,28 +53,24 @@ def show_study_cards(SQLAlchemy, username, listname):
     cards = get_cards.fetchall()
     return cards
 
-#Adds more date to a card. Used by SRS system.
 def add_more_date(SQLAlchemy, username, listname, word, translation, answer):
-    sql = "SELECT id FROM userinfo WHERE username=:username"
-    get_id = SQLAlchemy.session.execute(sql, {"username":username})
-    user_id = get_id.fetchone()[0]
 
-    sql2 = "SELECT id FROM lists WHERE user_id=:user_id AND name=:name"
-    get_list = SQLAlchemy.session.execute(sql2, {"user_id":user_id, "name":listname})
-    list_id = get_list.fetchone()[0]
+    list_id = list_id = userlists.get_list_id(SQLAlchemy, username, listname)
 
-    sql3 = "SELECT id FROM cards WHERE word=:word AND "\
+    get_card_sql = "SELECT id FROM cards WHERE word=:word AND "\
             "translation=:translation AND list_id=:list_id"
-    get_card = SQLAlchemy.session.execute(sql3, {"word":word, "translation":translation, 
-        "list_id":list_id})
+    get_card = SQLAlchemy.session.execute(get_card_sql, {"word":word, 
+    "translation":translation, "list_id":list_id})
     card_id = get_card.fetchone()[0]
-    sql3 = "SELECT difficulty FROM cards WHERE word=:word AND "\
-            "translation=:translation AND list_id=:list_id"
-    get_card = SQLAlchemy.session.execute(sql3, {"word":word, "translation":translation, 
-        "list_id":list_id})
-    difficulty = get_card.fetchone()[0]
 
-    sql4 = "UPDATE cards SET difficulty=:new_diff, date=NOW()+ INTERVAL':date day' WHERE id="+str(card_id)
+    get_difficulty_sql = "SELECT difficulty FROM cards WHERE word=:word AND "\
+            "translation=:translation AND list_id=:list_id"
+    get_difficulty = SQLAlchemy.session.execute(get_difficulty_sql, {"word":word, 
+    "translation":translation, "list_id":list_id})
+    difficulty = get_difficulty.fetchone()[0]
+
+    update_diff_sql = "UPDATE cards SET difficulty=:new_diff, date=NOW()+ "\
+    "INTERVAL':date day' WHERE id="+str(card_id)
     if answer == "correct":
         if difficulty == 1:
             date = 1
@@ -125,14 +88,13 @@ def add_more_date(SQLAlchemy, username, listname, word, translation, answer):
             date = 14
             new_diff = difficulty
 
-        
-        SQLAlchemy.session.execute(sql4, {"new_diff":new_diff, "date":date})
+        SQLAlchemy.session.execute(update_diff_sql, {"new_diff":new_diff, "date":date})
         SQLAlchemy.session.commit()
     else:
         date = 1
         if difficulty == 1:
             date = 0    
-        SQLAlchemy.session.execute(sql4, {"new_diff":1, "date":date})
+        SQLAlchemy.session.execute(update_diff_sql, {"new_diff":1, "date":date})
         SQLAlchemy.session.commit()
     return True
 

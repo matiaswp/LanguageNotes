@@ -13,7 +13,9 @@ def add_language(SQLAlchemy, user_id, language):
     return True
 
 def edit_language(SQLAlchemy, username, language, new_language):
+    
     user_id = database.get_user_id(SQLAlchemy, username)
+
     add_sql = "UPDATE languages SET language=:language WHERE user_id=:user_id"\
     " AND language=:new_language"
     SQLAlchemy.session.execute(add_sql, {"language":language, "user_id":user_id, 
@@ -25,15 +27,17 @@ def edit_language(SQLAlchemy, username, language, new_language):
 def delete_language(SQLAlchemy, username, language):
     
     user_id = database.get_user_id(SQLAlchemy, username)
+
     delete_sql = "DELETE FROM languages WHERE user_id=:id AND language=:lang"
     SQLAlchemy.session.execute(delete_sql, {"id":user_id, "lang":language})
     SQLAlchemy.session.commit()
+    return True
 
 def get_languages(SQLAlchemy, username):
 
     user_id = database.get_user_id(SQLAlchemy, username)
-    get_lang_sql = "SELECT language FROM languages WHERE user_id=:user_id"
-    get_languages = SQLAlchemy.session.execute(get_lang_sql, {"user_id":user_id})
+    get_lang_sql = "SELECT l.language FROM languages l, userinfo u WHERE l.user_id=u.id AND u.username=:username"
+    get_languages = SQLAlchemy.session.execute(get_lang_sql, {"username":username})
     
     try:
         languages = get_languages.fetchall()
@@ -43,14 +47,9 @@ def get_languages(SQLAlchemy, username):
     
 def check_if_learning(SQLAlchemy, username, language):
     
-    if language.strip() == "":
-        return True
-        
-
-    user_id = database.get_user_id(SQLAlchemy, username)
-    get_lang_sql = "SELECT language FROM languages WHERE user_id=:user_id AND LOWER(language)"\
-    "=LOWER(:language)"
-    get_language = SQLAlchemy.session.execute(get_lang_sql, {"user_id":user_id, 
+    get_lang_sql = "SELECT l.language FROM languages l, userinfo u WHERE l.user_id=u.id AND "\
+    "u.username=:username AND LOWER(language)=LOWER(:language)"
+    get_language = SQLAlchemy.session.execute(get_lang_sql, {"username":username, 
     "language":language})
 
     try:
@@ -61,4 +60,3 @@ def check_if_learning(SQLAlchemy, username, language):
     except:
         return False
     
-

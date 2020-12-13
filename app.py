@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.exceptions import abort
 from flask.helpers import flash
+import flask
 
 app = Flask(__name__)
 app.secret_key = getenv("SECRET_KEY")
@@ -28,9 +29,8 @@ def login():
         message = "Username or password incorrect"
         return render_template("login.html", message=message)        
 
-    if database.check_credentials(db, username, password) == True:
+    if database.check_credentials(db, username, password):
         session["username"] = username
-        session["logged_in"] = True
         session["csrf_token"] = os.urandom(16).hex()
         return redirect("/home")
     else:
@@ -44,22 +44,19 @@ def logout():
 
 @app.route("/home")
 def home():
-    try:
-        session["username"].strip()
-    except:
+    if is_not_logged_in():
         return redirect("/")
     return render_template("home.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register_page():
-    message = ""
+    
     if request.method == "POST":
         
         username = request.form["username"].strip()
         password = request.form["password"].strip()
         retyped_password = request.form["retypedPassword"].strip()
 
-        
         if username == "" or password == "":
             message = "Can't create account with empty credentials"
             return render_template("register.html", message=message)
@@ -73,34 +70,26 @@ def register_page():
             return render_template("register.html", message=message)
 
         if password == retyped_password:
-            if database.create_account(db, username, password) == False:
+            if database.create_account(db, username, password):
+                return redirect("/")
+            else:
                 message = "Username taken"
                 return render_template("register.html", message=message)
-            else:
-                return redirect("/")
         else:
             message = "Passwords didn't match"
             return render_template("register.html", message=message)
     else:
+        message = ""
         return render_template("register.html", message=message)
 
 @app.route("/user/<username>/mylists", methods=["GET", "POST"])    
 def mylists(username):
 
-    try:
-        session["username"].strip()
-    except:
+    if is_not_logged_in():
         return redirect("/")
 
     if username != session["username"]:
         return redirect("/user/" + session["username"] + "/mylists")
-
-    
-
-    try:
-        message = request.args("message")
-    except:
-        message = ""
 
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
@@ -121,19 +110,21 @@ def mylists(username):
             return redirect("/user/" + session["username"] + "/mylists")
     else:
         user_list = userlists.list_lists(db,username)
-        return render_template("mylists.html", lists=user_list, message=message)
+        return render_template("mylists.html", lists=user_list)
                   
 @app.route("/user/<username>/mylists/<listname>", methods=["POST", "GET"])
 def show_list(username, listname):
-    try:
-        session["username"].strip()
-    except:
+
+    if is_not_logged_in():
         return redirect("/")
+
     username = session["username"]
 
     if request.method == "POST":
+
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
+
         word = request.form["word"].strip()
         translation = request.form["translation"].strip()
 
@@ -141,7 +132,7 @@ def show_list(username, listname):
             flash("Can't create a card with empty values", category="error")
             return redirect("/user/" + username + "/mylists/" + listname)
         if len(word) > 50 or len(translation) > 50:
-            flash("Given values are too long", category="error")
+            flash("Given values are too long. The limit is 100.", category="error")
             return redirect("/user/" + username + "/mylists/" + listname)
 
         userlist.add_card_to_list(db,username, listname, word, translation)
@@ -154,12 +145,12 @@ def show_list(username, listname):
 
 @app.route("/user/<username>/mylists/<listname>/delete", methods=["POST"])
 def delete_list(username, listname):
+
+    if is_not_logged_in():
+        return redirect("/")
+
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
-    try:
-        session["username"].strip()
-    except:
-        return redirect("/")
 
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists")
@@ -171,12 +162,11 @@ def delete_list(username, listname):
 
 @app.route("/user/<username>/mylists/<listname>/edit", methods=["POST"])
 def edit_list(username, listname):
+    if is_not_logged_in():
+        return redirect("/")
+
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
-    try:
-        session["username"].strip()
-    except:
-        return redirect("/")
 
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists")
@@ -199,12 +189,11 @@ def edit_list(username, listname):
 
 @app.route("/user/<username>/mylists/<listname>/deletecard", methods=["POST"])
 def delete_card(username, listname):
+    if is_not_logged_in():
+        return redirect("/")
+
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
-    try:
-        session["username"].strip()
-    except:
-        return redirect("/")
 
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists/" + listname)
@@ -218,17 +207,16 @@ def delete_card(username, listname):
 
 @app.route("/user/<username>/mylists/<listname>/editcard", methods=["POST"])
 def edit_card(username, listname):
+
+    if is_not_logged_in():
+        return redirect("/")
+
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
-    try:
-        session["username"].strip()
-    except:
-        return redirect("/")
 
     if session["username"] != username:
         return redirect("/user/" + username + "/mylists/" + listname)
 
-    
     word = request.form["word"].strip()
     translation = request.form["translation"].strip()
     new_word = request.form["newWord"].strip()
@@ -239,7 +227,7 @@ def edit_card(username, listname):
         return redirect("/user/" + username + "/mylists/" + listname)
 
     if len(new_word) > 100 or len(new_translation) > 100:
-        flash("Given values are too long (the limit is 100 :))", category="error")
+        flash("Given values are too long. The limit is 100.", category="error")
         return redirect("/user/" + username + "/mylists/" + listname)
 
     userlist.edit_card(db, listname, username, word, translation, new_word, new_translation)
@@ -248,17 +236,15 @@ def edit_card(username, listname):
 
 @app.route("/user/<username>/mylists/<listname>/study", methods=["GET", "POST"])
 def flashcard(username, listname):
-    try:
-        session["username"].strip()
-    except:
+
+    if is_not_logged_in():
         return redirect("/")
 
-    username = session["username"]
-    cards = userlist.show_study_cards(db, username, listname)
-    length = len(cards)
     if request.method == "POST":
+
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
+
         word = request.form["word"]
         translation = request.form["translation"]
 
@@ -267,25 +253,33 @@ def flashcard(username, listname):
         else:
             userlist.add_more_date(db, username, listname, word, translation, "wrong")
 
-        return render_template("flashcard.html", cards=cards, length=length, 
-        listname=listname)
+        return redirect("/user/" + username + "/mylists/" + listname + "/study")
     else:
+        username = session["username"]
+        cards = userlist.show_study_cards(db, username, listname)
+        length = len(cards)
+
+        if length == 0:
+            flash("No more studying for today!", category="allDone")
+            return redirect("/user/" + username + "/mylists/" + listname)
+
         return render_template("flashcard.html", cards=cards, length=length, 
         listname=listname)
 
 """Shows user's profile page. You can follow and unfollow a user here"""
 @app.route("/user/<username>/profile", methods=["GET", "POST"])
 def profile(username):
-    try:
-        session["username"].strip()
-    except:
+
+    if is_not_logged_in():
         return redirect("/")
 
     follow_status = database.check_if_following(db, session["username"], username)
 
     if request.method == "POST":
+
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
+
         if follow_status:
             database.unfollow(db, session["username"], username)
             flash("Unfollowed succesfully", category="message")
@@ -297,7 +291,7 @@ def profile(username):
     else:
         message = ""
         if session["username"] == username:
-            message = "Yes, you can follow yourself so your follow list is never empty :)"
+            message = "Yes, you can follow yourself..."
         if follow_status:
             follow = "Unfollow"
         else:
@@ -311,22 +305,21 @@ def profile(username):
         message=message, languages=languages)
 
 @app.route("/user/<username>/profile/<listname>")
-def usercardlist(username, listname):
-    try:
-        session["username"].strip()
-    except:
+def user_card_list(username, listname):
+
+    if is_not_logged_in():
         return redirect("/")
+
     if username == session["username"]:
         return redirect("/user/" + session["username"] + "/mylists/" + listname)
+
     cards = userlist.show_cards(db, username, listname)
     return render_template("userlist.html", username=username, listname=listname,
     cards=cards)
 
 @app.route("/user/<username>/profile/edit", methods=["GET", "POST"])
 def edit_profile(username):
-    try:
-        session["username"].strip()
-    except:
+    if is_not_logged_in():
         return redirect("/")
     
     if request.method == "POST":
@@ -356,12 +349,11 @@ def edit_profile(username):
 
 @app.route("/user/<username>/profile/edit/add", methods=["POST"])
 def edit_add_lang(username):
+    if is_not_logged_in():
+        return redirect("/")
+
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
-    try:
-        session["username"].strip()
-    except:
-        return redirect("/")
 
     if username != session["username"]:
         return redirect("/user/" + session["username"] + "/profile/edit")
@@ -388,12 +380,13 @@ def edit_add_lang(username):
 
 @app.route("/user/<username>/profile/edit/delete", methods=["POST"])
 def edit_delete_lang(username):
+
+    if is_not_logged_in():
+        return redirect("/")
+
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
-    try:
-        session["username"].strip()
-    except:
-        return redirect("/")
+
     if username != session["username"]:
         return redirect("/user/" + session["username"] + "/profile/edit")
 
@@ -404,38 +397,43 @@ def edit_delete_lang(username):
 
 @app.route("/user/<username>/following")
 def following(username):
-    try:
-        session["username"].strip()
-    except:
+
+    if is_not_logged_in():
         return redirect("/")
 
     if username != session["username"]:
         return redirect("/user/" + session["username"] + "/following")
+
     names = database.show_following(db, session["username"])
     return render_template("following.html", names=names)
 
 @app.route("/info")
 def info_about():
-    try:
-        session["username"].strip()
-    except:
+
+    if is_not_logged_in():
         return redirect("/")
 
     return render_template("infoabout.html")
 
 @app.route("/search", methods=["POST"])
 def search():
+
+    if is_not_logged_in():
+        return redirect("/")
+
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
-    try:
-        session["username"].strip()
-    except:
-        return redirect("/")
 
     username = request.form["search"].strip()
 
     if username == "":
-        error = "Can't search without proper input :("
-        return render_template("layout.html", error=error)
-    error = ""
+        flash("Can't search with empty input.", category="searchError")
+        return redirect(request.referrer)
+
     return redirect("/user/" + username + "/profile")
+
+def is_not_logged_in():
+    try:
+        session["username"].strip()
+    except:
+        return True

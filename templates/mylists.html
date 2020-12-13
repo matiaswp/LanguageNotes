@@ -7,7 +7,7 @@
       <div class="col-11">
         <h1>Your collection</h1>
         <br>
-        <p>Creata a new list</p>
+        <h3>Create a new list</h3>
         <form action="/user/{{ session.username }}/mylists" method="POST">
           <p>Name for the list:<br>
             <input type="text" name="listname" required placeholder="Enter name (1-25 long)"></p>
@@ -23,6 +23,7 @@
         {% endwith %}
         <p>
         <h2>Lists</h2>
+        <p>You can enter a list by clicking the name of the list.</p>
         <div>
           {% for list in lists %}
           <div>
